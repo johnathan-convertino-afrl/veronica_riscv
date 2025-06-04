@@ -1,6 +1,6 @@
 CAPI=2:
 
-name : AFRL:project:veronica_axi_baremetal:1.0.0
+name : AFRL:project:veronica_axi:1.0.0
 description: Create a simple Vexrisv SoC for embedded system development.
 
 filesets:
@@ -34,8 +34,6 @@ filesets:
       - AFRL:utility:tcl_helper_check:1.0.0
       - zipcpu:axi_lite:crossbar:1.0.0
       - zipcpu:axi:crossbar:1.0.0
-      - zipcpu:axi:sdio:1.0.0
-      - zipcpu:axi:axixclk:1.0.0
 
   dep_uc_jtag_io:
     files:
@@ -56,6 +54,10 @@ filesets:
   dep_uc_secure_bscane:
     depend:
       - spinalhdl:cpu:veronica_axi_secure_jtag_xilinx_bscane:1.0.0
+      
+  dep_linux_bscane:
+    depend:
+      - spinalhdl:cpu:veronica_axi_linux_jtag_xilinx_bscane:1.0.0
 
   #dep_tb:
     #depend:
@@ -101,6 +103,11 @@ targets:
     description: Build for nexys-a7-100t digilent development board with standard Veronica RISCV.
     filesets_append : [dep_uc_bscane]
 
+  nexys-a7-100t_linux_jtag_bscane:
+    <<: *nexys-a7-100t
+    description: Build for nexys-a7-100t digilent development board with Linux Veronica RISCV.
+    filesets_append : [dep_linux_bscane]
+    
   #crosslink-nx_eval:
     #<<: *default
     #description : Build for CrossLink NX Evaluation Board.
