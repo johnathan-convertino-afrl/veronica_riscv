@@ -176,7 +176,7 @@ module system_ps_wrapper
     input               spi_miso,
     output              spi_mosi,
     output    [31:0]    spi_csn,
-    output              spi_clk,
+    output              spi_sclk,
     input               sys_clk,
     input               sys_rstn
   );
@@ -200,6 +200,7 @@ module system_ps_wrapper
 
   //irq
   wire           axi_uartlite_irq;
+  wire           axi_spi_irq;
 
   //axi lite gpio
   wire [31:0]    m_axi_gpio_ARADDR;
@@ -238,7 +239,7 @@ module system_ps_wrapper
   wire           s_axi_perf_WREADY;
   wire [ 3:0]    s_axi_perf_WSTRB;
   wire           s_axi_perf_WVALID;
-  wire [ 2:0]    s_axi_perf_APROT;
+  wire [ 2:0]    s_axi_perf_ARPROT;
   wire [ 2:0]    s_axi_perf_AWPROT;
 
   //axi4 w/ID memory bus (ibus/dbus path)
@@ -337,6 +338,8 @@ module system_ps_wrapper
   wire           m_axi_spi_WREADY;
   wire [ 3:0]    m_axi_spi_WSTRB;
   wire           m_axi_spi_WVALID;
+  wire [ 2:0]    m_axi_spi_AWPROT;
+  wire [ 2:0]    m_axi_spi_ARPROT;
 
   //axi lite uart
   wire [31:0]    m_axi_uart_ARADDR;
@@ -358,8 +361,8 @@ module system_ps_wrapper
   wire           m_axi_uart_WVALID;
 
   //fill in vector
-  wire [7*3-1:0]  m_axi_awprot_fill;
-  wire [7*3-1:0]  m_axi_arprot_fill;
+  wire [2*3-1:0]  m_axi_awprot_fill;
+  wire [2*3-1:0]  m_axi_arprot_fill;
   wire            s_axi_dma_axixclk_aresetn;
 
   //distribute clock for axi and assign to output for m_axi_acc
@@ -460,46 +463,47 @@ module system_ps_wrapper
     .s_axi_wvalid(m_axi_gpio_WVALID)
   );
 
-  // Module: inst_axi_spix1
+  // Module: inst_axi_spi
   //
   // AXI Standard SPI
-  axi_spix1 inst_axi_spix1
-  (
-    .ext_spi_clk(axi_cpu_clk),
-    .io0_i(spi_io0_i),
-    .io0_o(spi_io0_o),
-    .io0_t(spi_io0_t),
-    .io1_i(spi_io1_i),
-    .io1_o(spi_io1_o),
-    .io1_t(spi_io1_t),
-    .ip2intc_irpt(axi_spi_irq),
-    .s_axi_aclk(axi_cpu_clk),
-    .s_axi_araddr(m_axi_spi_ARADDR[6:0]),
-    .s_axi_aresetn(sys_rstgen_peripheral_aresetn),
-    .s_axi_arready(m_axi_spi_ARREADY),
-    .s_axi_arvalid(m_axi_spi_ARVALID),
-    .s_axi_awaddr(m_axi_spi_AWADDR[6:0]),
-    .s_axi_awready(m_axi_spi_AWREADY),
+  axi_lite_spi_master #(
+    .ADDRESS_WIDTH(32),
+    .BUS_WIDTH(4),
+    .WORD_WIDTH(1),
+    .CLOCK_SPEED(100000000),
+    .SELECT_WIDTH(32),
+    .DEFAULT_RATE_DIV(1),
+    .DEFAULT_CPOL(0),
+    .DEFAULT_CPHA(0)
+  ) inst_axi_spi (
+    .aclk(axi_cpu_clk),
+    .arstn(sys_rstgen_peripheral_aresetn),
     .s_axi_awvalid(m_axi_spi_AWVALID),
-    .s_axi_bready(m_axi_spi_BREADY),
-    .s_axi_bresp(m_axi_spi_BRESP),
-    .s_axi_bvalid(m_axi_spi_BVALID),
-    .s_axi_rdata(m_axi_spi_RDATA),
-    .s_axi_rready(m_axi_spi_RREADY),
-    .s_axi_rresp(m_axi_spi_RRESP),
-    .s_axi_rvalid(m_axi_spi_RVALID),
-    .s_axi_wdata(m_axi_spi_WDATA),
-    .s_axi_wready(m_axi_spi_WREADY),
-    .s_axi_wstrb(m_axi_spi_WSTRB),
+    .s_axi_awaddr(m_axi_spi_AWADDR),
+    .s_axi_awprot(m_axi_spi_AWPROT),
+    .s_axi_awready(m_axi_spi_AWREADY),
     .s_axi_wvalid(m_axi_spi_WVALID),
-    .sck_i(spi_sck_i),
-    .sck_o(spi_sck_o),
-    .sck_t(spi_sck_t),
-    .ss_i(spi_ss_i),
-    .ss_o(spi_ss_o),
-    .ss_t(spi_ss_t)
+    .s_axi_wdata(m_axi_spi_WDATA),
+    .s_axi_wstrb(m_axi_spi_WSTRB),
+    .s_axi_wready(m_axi_spi_WREADY),
+    .s_axi_bvalid(m_axi_spi_BVALID),
+    .s_axi_bresp(m_axi_spi_BRESP),
+    .s_axi_bready(m_axi_spi_BREADY),
+    .s_axi_arvalid(m_axi_spi_ARVALID),
+    .s_axi_araddr(m_axi_spi_ARADDR),
+    .s_axi_arprot(m_axi_spi_ARPROT),
+    .s_axi_arready(m_axi_spi_ARREADY),
+    .s_axi_rvalid(m_axi_spi_RVALID),
+    .s_axi_rdata(m_axi_spi_RDATA),
+    .s_axi_rresp(m_axi_spi_RRESP),
+    .s_axi_rready(m_axi_spi_RREADY),
+    .irq(axi_spi_irq),
+    .sclk(spi_sclk),
+    .mosi(spi_mosi),
+    .miso(spi_miso),
+    .ss_n(spi_csn)
   );
-
+  
   // Module: inst_axi_uart
   //
   // AXI UART LITE
@@ -587,7 +591,7 @@ module system_ps_wrapper
     .S_AXI_RVALID   (s_axi_perf_RVALID),
     .S_AXI_RREADY   (s_axi_perf_RREADY),
     .M_AXI_AWADDR  ({m_axi_spi_AWADDR,    m_axi_uart_AWADDR,     m_axi_gpio_AWADDR}),
-    .M_AXI_AWPROT  (),
+    .M_AXI_AWPROT  ({m_axi_spi_AWPROT,    m_axi_awprot_fill}),
     .M_AXI_AWVALID ({m_axi_spi_AWVALID,   m_axi_uart_AWVALID,    m_axi_gpio_AWVALID}),
     .M_AXI_AWREADY ({m_axi_spi_AWREADY,   m_axi_uart_AWREADY,    m_axi_gpio_AWREADY}),
     .M_AXI_WDATA   ({m_axi_spi_WDATA,     m_axi_uart_WDATA,      m_axi_gpio_WDATA}),
@@ -598,7 +602,7 @@ module system_ps_wrapper
     .M_AXI_BVALID  ({m_axi_spi_BVALID,    m_axi_uart_BVALID,     m_axi_gpio_BVALID}),
     .M_AXI_BREADY  ({m_axi_spi_BREADY,    m_axi_uart_BREADY,     m_axi_gpio_BREADY}),
     .M_AXI_ARADDR  ({m_axi_spi_ARADDR,    m_axi_uart_ARADDR,     m_axi_gpio_ARADDR}),
-    .M_AXI_ARPROT  (),
+    .M_AXI_ARPROT  ({m_axi_spi_ARPROT,    m_axi_arprot_fill}),
     .M_AXI_ARVALID ({m_axi_spi_ARVALID,   m_axi_uart_ARVALID,    m_axi_gpio_ARVALID}),
     .M_AXI_ARREADY ({m_axi_spi_ARREADY,   m_axi_uart_ARREADY,    m_axi_gpio_ARREADY}),
     .M_AXI_RDATA   ({m_axi_spi_RDATA,     m_axi_uart_RDATA,      m_axi_gpio_RDATA}),

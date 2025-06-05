@@ -66,6 +66,10 @@
  * ftdi_rx                - FTDI UART RX
  * ftdi_rts               - FTDI UART RTS
  * ftdi_cts               - FTDI UART CTS
+ * sd_spi_miso            - SD CARD Master In Master Out SPI
+ * sd_spi_mosi            - SD CARD Master Out Master In SPI
+ * sd_spi_csn             - SD CARD Chip Select SPI
+ * sd_spi_sclk            - SD CARD clock SPI
  */
 module system_wrapper
   (
@@ -97,13 +101,23 @@ module system_wrapper
     input             ftdi_tx,
     output            ftdi_rx,
     input             ftdi_rts,
-    output            ftdi_cts
+    output            ftdi_cts,
+    input             sd_spi_miso,
+    output            sd_spi_mosi,
+    output            sd_spi_csn,
+    output            sd_spi_sclk,
+    output            sd_reset
   );
 
-  wire          sys_clk;
-  wire          reset;
+  // wire          sys_clk;
+  // wire          reset;
 
+  wire [31:0] s_spi_csn;
+  
+  assign sd_spi_csn = s_spi_csn[0];
 
+  assign sd_reset = 1'b1;
+  
   assign ftdi_cts = ftdi_rts;
 
   // Module: inst_system_ps_wrapper
@@ -156,18 +170,10 @@ module system_wrapper
     .gpio_io_o(leds),
     .gpio_io_t(),
     .s_axi_clk(),
-    // .spi_io0_i(1'b0),
-    // .spi_io0_o(),
-    // .spi_io0_t(),
-    // .spi_io1_i(1'b0),
-    // .spi_io1_o(),
-    // .spi_io1_t(),
-    // .spi_sck_i(1'b0),
-    // .spi_sck_o(),
-    // .spi_sck_t(),
-    // .spi_ss_i(1'b0),
-    // .spi_ss_o(),
-    // .spi_ss_t(),
+    .spi_miso(sd_spi_miso),
+    .spi_mosi(sd_spi_mosi),
+    .spi_csn(s_spi_csn),
+    .spi_sclk(sd_spi_sclk),
     .sys_clk(clk),
     .sys_rstn(resetn)
   );

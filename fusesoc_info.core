@@ -19,7 +19,6 @@ filesets:
       - AFRL:utility:digilent_nexys-a7-100t_board_base_constr:1.0.0
       - AFRL:utility:digilent_nexys-a7-100t_board_base_ddr_cfg:1.0.0
       - AFRL:utility:vivado_board_support_packages
-      - AD:ethernet:util_mii_to_rmii:1.0.0
 
   crosslink-nx_eval:
     files:
@@ -32,6 +31,7 @@ filesets:
     depend:
       - AFRL:utility:helper:1.0.0
       - AFRL:utility:tcl_helper_check:1.0.0
+      - AFRL:device:axi_lite_spi_master:1.0.0
       - zipcpu:axi_lite:crossbar:1.0.0
       - zipcpu:axi:crossbar:1.0.0
 
