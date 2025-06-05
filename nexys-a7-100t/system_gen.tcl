@@ -11,7 +11,7 @@ reorder_files -fileset constrs_1 -front [get_files system_constr.tcl]
 #fixes for zipcpu axi_crossbar in vivado. default_net will screw up synth. make all files last.
 reorder_files -fileset sources_1 -back [get_files skidbuffer.v]
 reorder_files -fileset sources_1 -back [get_files addrdecode.v]
-reorder_files -fileset sources_1 -back [get_files axixbar.v]
+# reorder_files -fileset sources_1 -back [get_files axixbar.v]
 reorder_files -fileset sources_1 -back [get_files axilxbar.v]
 #fixes for zipcpu sdspi in vivado. default_net will screw up synth. make all files last.
 # reorder_files -fileset sources_1 -back [get_files afifo.v]
