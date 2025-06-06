@@ -40,21 +40,21 @@ set_property CONFIG.C_AUX_RESET_HIGH 1 [get_ips ddr_rstgen]
 
 set_property generate_synth_checkpoint false [get_files ddr_rstgen.xci]
 
-# create uart lite
-ip_vlvn_version_check "xilinx.com:ip:axi_uartlite:2.0"
-
-create_ip -vlnv xilinx.com:ip:axi_uartlite:2.0 -module_name axi_uart
-set_property CONFIG.C_BAUDRATE {115200} [get_ips axi_uart]
-set_property CONFIG.C_S_AXI_ACLK_FREQ_HZ_d $CLK_FREQ_MHZ [get_ips axi_uart]
-
-set_property generate_synth_checkpoint false [get_files axi_uart.xci]
-
-#create gpio
-ip_vlvn_version_check "xilinx.com:ip:axi_gpio:2.0"
-
-create_ip -vlnv xilinx.com:ip:axi_gpio:2.0 -module_name axi_gpio32
-
-set_property generate_synth_checkpoint false [get_files axi_gpio32.xci]
+# # create uart lite
+# ip_vlvn_version_check "xilinx.com:ip:axi_uartlite:2.0"
+# 
+# create_ip -vlnv xilinx.com:ip:axi_uartlite:2.0 -module_name axi_uart
+# set_property CONFIG.C_BAUDRATE {115200} [get_ips axi_uart]
+# set_property CONFIG.C_S_AXI_ACLK_FREQ_HZ_d $CLK_FREQ_MHZ [get_ips axi_uart]
+# 
+# set_property generate_synth_checkpoint false [get_files axi_uart.xci]
+# 
+# #create gpio
+# ip_vlvn_version_check "xilinx.com:ip:axi_gpio:2.0"
+# 
+# create_ip -vlnv xilinx.com:ip:axi_gpio:2.0 -module_name axi_gpio32
+# 
+# set_property generate_synth_checkpoint false [get_files axi_gpio32.xci]
 
 #create ddr controller
 ip_vlvn_version_check "xilinx.com:ip:mig_7series:4.2"

@@ -109,16 +109,11 @@ module system_wrapper
     output            sd_reset
   );
 
-  // wire          sys_clk;
-  // wire          reset;
-
   wire [31:0] s_spi_csn;
   
   assign sd_spi_csn = s_spi_csn[0];
 
   assign sd_reset = 1'b1;
-  
-  assign ftdi_cts = ftdi_rts;
 
   // Module: inst_system_ps_wrapper
   //
@@ -166,6 +161,8 @@ module system_wrapper
     .M_AXI_wvalid(),
     .UART_rxd(ftdi_tx),
     .UART_txd(ftdi_rx),
+    .UART_rts(ftdi_cts),
+    .UART_cts(ftdi_rts),
     .gpio_io_i(slide_switches),
     .gpio_io_o(leds),
     .gpio_io_t(),

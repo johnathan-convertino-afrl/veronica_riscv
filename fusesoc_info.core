@@ -32,6 +32,8 @@ filesets:
       - AFRL:utility:helper:1.0.0
       - AFRL:utility:tcl_helper_check:1.0.0
       - AFRL:device:axi_lite_spi_master:1.0.0
+      - AFRL:device:axi_lite_uart:1.0.0
+      - AFRL:device:axi_lite_gpio:1.0.0
       - zipcpu:axi_lite:crossbar:1.0.0
 
   dep_uc_jtag_io:
