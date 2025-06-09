@@ -109,11 +109,168 @@ module system_wrapper
     output            sd_reset
   );
 
+  // Memory bus wires
+  wire            m_axi_mbus_awvalid;
+  wire            m_axi_mbus_awready;
+  wire  [31:0]    m_axi_mbus_awaddr;
+  wire  [ 3:0]    m_axi_mbus_awid;
+  wire  [ 7:0]    m_axi_mbus_awlen;
+  wire  [ 2:0]    m_axi_mbus_awsize;
+  wire  [ 1:0]    m_axi_mbus_awburst;
+  wire  [ 0:0]    m_axi_mbus_awlock;
+  wire  [ 3:0]    m_axi_mbus_awcache;
+  wire  [ 3:0]    m_axi_mbus_awqos;
+  wire  [ 2:0]    m_axi_mbus_awprot;
+  wire            m_axi_mbus_wvalid;
+  wire            m_axi_mbus_wready;
+  wire  [31:0]    m_axi_mbus_wdata;
+  wire  [ 3:0]    m_axi_mbus_wstrb;
+  wire            m_axi_mbus_wlast;
+  wire            m_axi_mbus_bvalid;
+  wire            m_axi_mbus_bready;
+  wire  [ 3:0]    m_axi_mbus_bid;
+  wire  [ 1:0]    m_axi_mbus_bresp;
+  wire            m_axi_mbus_arvalid;
+  wire            m_axi_mbus_arready;
+  wire  [31:0]    m_axi_mbus_araddr;
+  wire  [ 3:0]    m_axi_mbus_arid;
+  wire  [ 7:0]    m_axi_mbus_arlen;
+  wire  [ 2:0]    m_axi_mbus_arsize;
+  wire  [ 1:0]    m_axi_mbus_arburst;
+  wire  [ 0:0]    m_axi_mbus_arlock;
+  wire  [ 3:0]    m_axi_mbus_arcache;
+  wire  [ 3:0]    m_axi_mbus_arqos;
+  wire  [ 2:0]    m_axi_mbus_arprot;
+  wire            m_axi_mbus_rvalid;
+  wire            m_axi_mbus_rready;
+  wire  [31:0]    m_axi_mbus_rdata;
+  wire  [ 3:0]    m_axi_mbus_rid;
+  wire  [ 1:0]    m_axi_mbus_rresp;
+  wire            m_axi_mbus_rlast;
+  
+  //clocks
+  wire           axi_cpu_clk;
+  wire           ddr_clk;
+
+  //resets
+  wire [ 0:0]    ddr_rstgen_peripheral_aresetn;
+  wire [ 0:0]    ddr_rstgen_peripheral_reset;
+  wire [ 0:0]    sys_rstgen_peripheral_aresetn;
+  wire           debug_rst;
+
+  //ddr signals and clocks
+  wire           axi_ddr_ctrl_mmcm_locked;
+  wire           axi_ddr_ctrl_ui_clk;
+  wire           axi_ddr_ctrl_ui_clk_sync_rst;
+  
   wire [31:0] s_spi_csn;
   
   assign sd_spi_csn = s_spi_csn[0];
 
   assign sd_reset = 1'b1;
+  
+  // Module: inst_clk_wiz_1
+  //
+  // Generate system clocks
+  clk_wiz_1 inst_clk_wiz_1
+  (
+    .clk_in1(clk),
+    .clk_out1(axi_cpu_clk),
+    .clk_out2(ddr_clk)
+  );
+
+  // Module: inst_ddr_rstgen
+  //
+  // Generate DDR Reset
+  ddr_rstgen inst_ddr_rstgen
+  (
+    .aux_reset_in(axi_ddr_ctrl_ui_clk_sync_rst),
+    .dcm_locked(axi_ddr_ctrl_mmcm_locked),
+    .ext_reset_in(resetn),
+    .mb_debug_sys_rst(debug_rst),
+    .peripheral_reset(ddr_rstgen_peripheral_reset),
+    .peripheral_aresetn(ddr_rstgen_peripheral_aresetn),
+    .slowest_sync_clk(axi_ddr_ctrl_ui_clk)
+  );
+  
+  // Module: inst_sys_rstgen
+  //
+  // Generate general system resets
+  sys_rstgen inst_sys_rstgen
+  (
+    .aux_reset_in(axi_ddr_ctrl_ui_clk_sync_rst),
+    .dcm_locked(axi_ddr_ctrl_mmcm_locked),
+    .ext_reset_in(resetn),
+    .interconnect_aresetn(),
+    .mb_debug_sys_rst(debug_rst),
+    .peripheral_reset(),
+    .peripheral_aresetn(sys_rstgen_peripheral_aresetn),
+    .slowest_sync_clk(axi_cpu_clk)
+  );
+  
+  // Module: inst_axi_ddr_ctrl
+  //
+  // AXI DDR Controller
+  axi_ddr_ctrl inst_axi_ddr_ctrl
+  (
+    .aresetn(ddr_rstgen_peripheral_aresetn),
+    .ddr2_addr(ddr2_addr),
+    .ddr2_ba(ddr2_ba),
+    .ddr2_cas_n(ddr2_cas_n),
+    .ddr2_ck_n(ddr2_ck_n),
+    .ddr2_ck_p(ddr2_ck_p),
+    .ddr2_cke(ddr2_cke),
+    .ddr2_cs_n(ddr2_cs_n),
+    .ddr2_dm(ddr2_dm),
+    .ddr2_dq(ddr2_dq),
+    .ddr2_dqs_n(ddr2_dqs_n),
+    .ddr2_dqs_p(ddr2_dqs_p),
+    .ddr2_odt(ddr2_odt),
+    .ddr2_ras_n(ddr2_ras_n),
+    .ddr2_we_n(ddr2_we_n),
+    .mmcm_locked(axi_ddr_ctrl_mmcm_locked),
+    .s_axi_araddr(m_axi_mbus_araddr & 32'h0FFFFFFF),
+    .s_axi_arburst(m_axi_mbus_arburst),
+    .s_axi_arcache(m_axi_mbus_arcache),
+    .s_axi_arid(m_axi_mbus_arid),
+    .s_axi_arlen(m_axi_mbus_arlen),
+    .s_axi_arlock(m_axi_mbus_arlock),
+    .s_axi_arprot(m_axi_mbus_arprot),
+    .s_axi_arqos(m_axi_mbus_arqos),
+    .s_axi_arready(m_axi_mbus_arready),
+    .s_axi_arsize(m_axi_mbus_arsize),
+    .s_axi_arvalid(m_axi_mbus_arvalid),
+    .s_axi_awaddr(m_axi_mbus_awaddr & 32'h0FFFFFFF),
+    .s_axi_awburst(m_axi_mbus_awburst),
+    .s_axi_awcache(m_axi_mbus_awcache),
+    .s_axi_awid(m_axi_mbus_awid),
+    .s_axi_awlen(m_axi_mbus_awlen),
+    .s_axi_awlock(m_axi_mbus_awlock),
+    .s_axi_awprot(m_axi_mbus_awprot),
+    .s_axi_awqos(m_axi_mbus_awqos),
+    .s_axi_awready(m_axi_mbus_awready),
+    .s_axi_awsize(m_axi_mbus_awsize),
+    .s_axi_awvalid(m_axi_mbus_awvalid),
+    .s_axi_bid(m_axi_mbus_bid),
+    .s_axi_bready(m_axi_mbus_bready),
+    .s_axi_bvalid(m_axi_mbus_bvalid),
+    .s_axi_bresp(m_axi_mbus_bresp),
+    .s_axi_rdata(m_axi_mbus_rdata),
+    .s_axi_rid(m_axi_mbus_rid),
+    .s_axi_rlast(m_axi_mbus_rlast),
+    .s_axi_rready(m_axi_mbus_rready),
+    .s_axi_rvalid(m_axi_mbus_rvalid),
+    .s_axi_rresp(m_axi_mbus_rresp),
+    .s_axi_wdata(m_axi_mbus_wdata),
+    .s_axi_wlast(m_axi_mbus_wlast),
+    .s_axi_wready(m_axi_mbus_wready),
+    .s_axi_wstrb(m_axi_mbus_wstrb),
+    .s_axi_wvalid(m_axi_mbus_wvalid),
+    .sys_clk_i(ddr_clk),
+    .sys_rst(resetn),
+    .ui_clk(axi_ddr_ctrl_ui_clk),
+    .ui_clk_sync_rst(axi_ddr_ctrl_ui_clk_sync_rst)
+  );
 
   // Module: inst_system_ps_wrapper
   //
@@ -125,54 +282,79 @@ module system_wrapper
     .tdi(tdi),
     .tdo(tdo),
 `endif
-    .DDR_addr(ddr2_addr),
-    .DDR_ba(ddr2_ba),
-    .DDR_cas_n(ddr2_cas_n),
-    .DDR_ck_n(ddr2_ck_n),
-    .DDR_ck_p(ddr2_ck_p),
-    .DDR_cke(ddr2_cke),
-    .DDR_cs_n(ddr2_cs_n),
-    .DDR_dm(ddr2_dm),
-    .DDR_dq(ddr2_dq),
-    .DDR_dqs_n(ddr2_dqs_n),
-    .DDR_dqs_p(ddr2_dqs_p),
-    .DDR_odt(ddr2_odt),
-    .DDR_ras_n(ddr2_ras_n),
-    .DDR_we_n(ddr2_we_n),
-    .IRQ(3'b000),
-    .M_AXI_araddr(),
-    .M_AXI_arprot(),
-    .M_AXI_arready(1'b1),
-    .M_AXI_arvalid(),
-    .M_AXI_awaddr(),
-    .M_AXI_awprot(),
-    .M_AXI_awready(1'b1),
-    .M_AXI_awvalid(),
-    .M_AXI_bready(),
-    .M_AXI_bresp(3'b000),
-    .M_AXI_bvalid(2'b00),
-    .M_AXI_rdata(32'h00000000),
-    .M_AXI_rready(),
-    .M_AXI_rresp(3'b000),
-    .M_AXI_rvalid(1'b00),
-    .M_AXI_wdata(),
-    .M_AXI_wready(1'b1),
-    .M_AXI_wstrb(),
-    .M_AXI_wvalid(),
-    .UART_rxd(ftdi_tx),
-    .UART_txd(ftdi_rx),
-    .UART_rts(ftdi_cts),
-    .UART_cts(ftdi_rts),
+    .aclk(axi_cpu_clk),
+    .arstn(sys_rstgen_peripheral_aresetn),
+    .ddr_clk(axi_ddr_ctrl_ui_clk),
+    .ddr_rst(ddr_rstgen_peripheral_reset),
+    .m_axi_mbus_araddr(m_axi_mbus_araddr),
+    .m_axi_mbus_arburst(m_axi_mbus_arburst),
+    .m_axi_mbus_arcache(m_axi_mbus_arcache),
+    .m_axi_mbus_arid(m_axi_mbus_arid),
+    .m_axi_mbus_arlen(m_axi_mbus_arlen),
+    .m_axi_mbus_arprot(m_axi_mbus_arprot),
+    .m_axi_mbus_arready(m_axi_mbus_arready),
+    .m_axi_mbus_arsize(m_axi_mbus_arsize),
+    .m_axi_mbus_arvalid(m_axi_mbus_arvalid),
+    .m_axi_mbus_awaddr(m_axi_mbus_awaddr),
+    .m_axi_mbus_awburst(m_axi_mbus_awburst),
+    .m_axi_mbus_awcache(m_axi_mbus_awcache),
+    .m_axi_mbus_awid(m_axi_mbus_awid),
+    .m_axi_mbus_awlen(m_axi_mbus_awlen),
+    .m_axi_mbus_awprot(m_axi_mbus_awprot),
+    .m_axi_mbus_awready(m_axi_mbus_awready),
+    .m_axi_mbus_awsize(m_axi_mbus_awsize),
+    .m_axi_mbus_awvalid(m_axi_mbus_awvalid),
+    .m_axi_mbus_bid(m_axi_mbus_bid),
+    .m_axi_mbus_bready(m_axi_mbus_bready),
+    .m_axi_mbus_bvalid(m_axi_mbus_bvalid),
+    .m_axi_mbus_rdata(m_axi_mbus_rdata),
+    .m_axi_mbus_rid(m_axi_mbus_rid),
+    .m_axi_mbus_rlast(m_axi_mbus_rlast),
+    .m_axi_mbus_rready(m_axi_mbus_rready),
+    .m_axi_mbus_rvalid(m_axi_mbus_rvalid),
+    .m_axi_mbus_wdata(m_axi_mbus_wdata),
+    .m_axi_mbus_wlast(m_axi_mbus_wlast),
+    .m_axi_mbus_wready(m_axi_mbus_wready),
+    .m_axi_mbus_wstrb(m_axi_mbus_wstrb),
+    .m_axi_mbus_wvalid(m_axi_mbus_wvalid),
+    .m_axi_mbus_arqos(m_axi_mbus_arqos),
+    .m_axi_mbus_arlock(m_axi_mbus_arlock),
+    .m_axi_mbus_awqos(m_axi_mbus_awqos),
+    .m_axi_mbus_awlock(m_axi_mbus_awlock),
+    .m_axi_mbus_rresp(m_axi_mbus_rresp),
+    .m_axi_mbus_bresp(m_axi_mbus_bresp),
+    .m_axi_acc_araddr(),
+    .m_axi_acc_arprot(),
+    .m_axi_acc_arready(1'b1),
+    .m_axi_acc_arvalid(),
+    .m_axi_acc_awaddr(),
+    .m_axi_acc_awprot(),
+    .m_axi_acc_awready(1'b1),
+    .m_axi_acc_awvalid(),
+    .m_axi_acc_bready(),
+    .m_axi_acc_bresp(3'b000),
+    .m_axi_acc_bvalid(2'b00),
+    .m_axi_acc_rdata(32'h00000000),
+    .m_axi_acc_rready(),
+    .m_axi_acc_rresp(3'b000),
+    .m_axi_acc_rvalid(1'b00),
+    .m_axi_acc_wdata(),
+    .m_axi_acc_wready(1'b1),
+    .m_axi_acc_wstrb(),
+    .m_axi_acc_wvalid(),
+    .irq(3'b000),
+    .uart_rxd(ftdi_tx),
+    .uart_txd(ftdi_rx),
+    .uart_rts(ftdi_cts),
+    .uart_cts(ftdi_rts),
     .gpio_io_i(slide_switches),
     .gpio_io_o(leds),
     .gpio_io_t(),
-    .s_axi_clk(),
     .spi_miso(sd_spi_miso),
     .spi_mosi(sd_spi_mosi),
     .spi_csn(s_spi_csn),
     .spi_sclk(sd_spi_sclk),
-    .sys_clk(clk),
-    .sys_rstn(resetn)
+    .debug_rst(debug_rst)
   );
 
 endmodule
