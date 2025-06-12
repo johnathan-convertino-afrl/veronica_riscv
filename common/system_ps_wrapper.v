@@ -135,6 +135,7 @@ module system_ps_wrapper
 `endif
     input   wire            aclk,
     input   wire            arstn,
+    input   wire            arst,
     input   wire            ddr_clk,
     input   wire            ddr_rst,
     output  wire            m_axi_mbus_awvalid,
@@ -196,8 +197,6 @@ module system_ps_wrapper
     input   wire  [ 2:0]    irq,
     input   wire            uart_rxd,
     output  wire            uart_txd,
-    output  wire            uart_rts,
-    input   wire            uart_cts,
     input   wire  [31:0]    gpio_io_i,
     output  wire  [31:0]    gpio_io_o,
     output  wire  [31:0]    gpio_io_t,
@@ -377,20 +376,17 @@ module system_ps_wrapper
   // Module: inst_axi_uart
   //
   // AXI uart LITE 
-  axi_lite_uart #(
+  axi_lite_uart_lite #(
     .ADDRESS_WIDTH(32),
     .BUS_WIDTH(4),
     .CLOCK_SPEED(50000000),
     .BAUD_RATE(115200),
-    .PARITY_ENA(0),
     .PARITY_TYPE(0),
     .STOP_BITS(1),
     .DATA_BITS(8),
-    .RX_DELAY(0),
     .RX_BAUD_DELAY(0),
-    .TX_DELAY(0),
     .TX_BAUD_DELAY(0)
-  ) inst_axi_uart (
+  ) inst_axi_uart_lite (
     .aclk(aclk),
     .arstn(arstn),
     .s_axi_awvalid(m_axi_uart_AWVALID),
@@ -414,9 +410,7 @@ module system_ps_wrapper
     .s_axi_rready(m_axi_uart_RREADY),
     .irq(axi_uartlite_irq),
     .tx(uart_txd),
-    .rx(uart_rxd),
-    .rts(uart_rts),
-    .cts(uart_cts)
+    .rx(uart_rxd)
   );
 
   // Module: inst_axilite_perf_xbar
@@ -484,7 +478,7 @@ module system_ps_wrapper
     .io_jtag_tck(tck),
   `endif
     .io_aclk(aclk),
-    .io_arst(arstn),
+    .io_arst(arst),
     .io_debug_rst(debug_rst),
     .io_ddr_clk(ddr_clk),
     .io_ddr_rst(ddr_rst),

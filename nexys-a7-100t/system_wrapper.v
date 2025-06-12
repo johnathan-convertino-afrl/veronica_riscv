@@ -108,6 +108,8 @@ module system_wrapper
     output            sd_spi_sclk,
     output            sd_reset
   );
+  
+  assign ftdi_cts = ftdi_rts;
 
   // Memory bus wires
   wire            m_axi_mbus_awvalid;
@@ -156,6 +158,7 @@ module system_wrapper
   wire [ 0:0]    ddr_rstgen_peripheral_aresetn;
   wire [ 0:0]    ddr_rstgen_peripheral_reset;
   wire [ 0:0]    sys_rstgen_peripheral_aresetn;
+  wire [ 0:0]    sys_rstgen_peripheral_areset;
   wire           debug_rst;
 
   //ddr signals and clocks
@@ -203,7 +206,7 @@ module system_wrapper
     .ext_reset_in(resetn),
     .interconnect_aresetn(),
     .mb_debug_sys_rst(debug_rst),
-    .peripheral_reset(),
+    .peripheral_reset(sys_rstgen_peripheral_areset),
     .peripheral_aresetn(sys_rstgen_peripheral_aresetn),
     .slowest_sync_clk(axi_cpu_clk)
   );
@@ -284,6 +287,7 @@ module system_wrapper
 `endif
     .aclk(axi_cpu_clk),
     .arstn(sys_rstgen_peripheral_aresetn),
+    .arst(sys_rstgen_peripheral_areset),
     .ddr_clk(axi_ddr_ctrl_ui_clk),
     .ddr_rst(ddr_rstgen_peripheral_reset),
     .m_axi_mbus_araddr(m_axi_mbus_araddr),
@@ -345,8 +349,6 @@ module system_wrapper
     .irq(3'b000),
     .uart_rxd(ftdi_tx),
     .uart_txd(ftdi_rx),
-    .uart_rts(ftdi_cts),
-    .uart_cts(ftdi_rts),
     .gpio_io_i(slide_switches),
     .gpio_io_o(leds),
     .gpio_io_t(),
