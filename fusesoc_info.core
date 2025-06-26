@@ -4,13 +4,13 @@ name : AFRL:project:veronica_axi:1.0.0
 description: Create a simple Vexrisv SoC for embedded system development.
 
 filesets:
-  #tb:
-    #files:
-      #- tb/tb_veronica.v : { file_type: verilogSource }
+  tb:
+    files:
+      - tb/tb_veronica.v : { file_type: verilogSource }
       
   common:
     files:
-      - common/system_ps_wrapper.v         : {file_type : verilogSource}
+      - common/system_ps_axi_perf_wrapper.v         : {file_type : verilogSource}
 
   nexys-a7-100t:
     files:
@@ -38,37 +38,56 @@ filesets:
       - AFRL:device:axi_lite_uart_lite:1.0.0
       - AFRL:device:axi_lite_gpio:1.0.0
       - zipcpu:axi_lite:crossbar:1.0.0
+      
+  dep_vivado_jtag_io:
+    files:
+      - common/xilinx/system_define.tcl         : {file_type : tclSource}
 
   dep_uc_jtag_io:
     files:
-      - nexys-a7-100t/system_define.tcl : {file_type : tclSource}
+      - common/system_ps_wrapper_jtag.v         : {file_type : verilogSource}
     depend:
       - spinalhdl:cpu:veronica_axi_jtag_io:1.0.0
 
   dep_uc_secure_jtag_io:
     files:
-      - nexys-a7-100t/system_define.tcl : {file_type : tclSource}
+    - common/system_ps_wrapper_jtag.v         : {file_type : verilogSource}
     depend:
       - spinalhdl:cpu:veronica_axi_secure_jtag_io:1.0.0
+      
+  dep_linux_jtag_io:
+    files:
+      - common/system_ps_wrapper_jtag.v         : {file_type : verilogSource}
+    depend:
+      - spinalhdl:cpu:veronica_axi_linux_jtag_io:1.0.0
 
   dep_uc_jtag_bscane:
+    files:
+      - common/system_ps_wrapper.v         : {file_type : verilogSource}
     depend:
       - spinalhdl:cpu:veronica_axi_jtag_xilinx_bscane:1.0.0
 
   dep_uc_secure_jtag_bscane:
+    files:
+      - common/system_ps_wrapper.v         : {file_type : verilogSource}
     depend:
       - spinalhdl:cpu:veronica_axi_secure_jtag_xilinx_bscane:1.0.0
       
   dep_linux_jtag_bscane:
+    files:
+      - common/system_ps_wrapper.v         : {file_type : verilogSource}
     depend:
       - spinalhdl:cpu:veronica_axi_linux_jtag_xilinx_bscane:1.0.0
 
-  #dep_tb:
-    #depend:
-      #- spinalhdl:cpu:ace_vexriscv_murax_sim:1.0.0
-      #- AFRL:simulation:clock_stimulator
-      #- AFRL:vpi:tcp_server:1.0.0
-      #- ::jtag_vpi:0-r5
+  dep_uc_secure_jtag_tb:
+    files:
+    - common/system_ps_wrapper_jtag.v         : {file_type : verilogSource}
+    depend:
+      - spinalhdl:cpu:veronica_axi_secure_jtag_io:1.0.0
+      - AFRL:simulation:clock_stimulator
+      - AFRL:vpi:tcp_server:1.0.0
+      - AFRL:device_converter:fast_axis_uart:1.0.0
+      - ::jtag_vpi:0-r5
 
 targets:
 
@@ -90,12 +109,12 @@ targets:
   nexys-a7-100t_uc_secure_jtag_io:
     <<: *nexys-a7-100t
     description: Build for nexys-a7-100t digilent development board with PMP enabled Veronica RISCV.
-    filesets_append : [dep_uc_secure_jtag_io]
+    filesets_append : [dep_uc_secure_jtag_io, dep_vivado_jtag_io]
 
   nexys-a7-100t_uc_jtag_io:
     <<: *nexys-a7-100t
     description: Build for nexys-a7-100t digilent development board with standard Veronica RISCV.
-    filesets_append : [dep_uc_jtag_io]
+    filesets_append : [dep_uc_jtag_io, dep_vivado_jtag_io]
 
   nexys-a7-100t_uc_secure_jtag_bscane:
     <<: *nexys-a7-100t
@@ -112,19 +131,39 @@ targets:
     description: Build for nexys-a7-100t digilent development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_bscane]
     
-  #crosslink-nx_eval:
-    #<<: *default
-    #description : Build for CrossLink NX Evaluation Board.
-    #default_tool : radiant
-    #filesets_append: [crosslink-nx_eval]
-    #tools:
-      #radiant:
-        #part: LIFCL-40-9BG400C
+  crosslink-nx_eval: &crosslink-nx_eval
+    <<: *default
+    description : Defaults for CrossLink NX Evaluation Board, do not use.
+    default_tool : radiant
+    filesets_append: [crosslink-nx_eval]
+    tools:
+      radiant:
+        part: LIFCL-40-9BG400C
+        
+  crosslink-nx_eval_uc_jtag_io:
+    <<: *crosslink-nx_eval
+    description: Build for crosslink-nx_eval development board with standard Veronica RISCV.
+    filesets_append : [dep_uc_jtag_io]
+    
+  crosslink-nx_eval_uc_secure_jtag_io:
+    <<: *crosslink-nx_eval
+    description: Build for crosslink-nx_eval development board with secure Veronica RISCV.
+    filesets_append : [dep_uc_secure_jtag_io]
+    
+  crosslink-nx_eval_linux_jtag_io:
+    <<: *crosslink-nx_eval
+    description: Build for crosslink-nx_eval development board with Linux Veronica RISCV.
+    filesets_append : [dep_linux_jtag_io]
 
-  #sim: &sim
-    #description: Simulate with JTAG TCP server, UART TCP server, and GPIO TCP server
-    #default_tool: icarus
-    #toplevel: tb_ace_murax
-    #filesets: [tb, dep_tb]
-    #parameters:
-      #- jtag_vpi_enable=true
+  sim_uc_secure_jtag:
+    <<: *default
+    description: Simulate with JTAG TCP server, UART TCP server, and GPIO TCP server
+    default_tool: icarus
+    toplevel: tb_veronica
+    filesets_append: [tb, dep_uc_secure_jtag_tb]
+    tools:
+      icarus:
+        iverilog_options: 
+        - -g2005-sv
+    parameters:
+      - jtag_vpi_enable=true

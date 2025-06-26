@@ -278,12 +278,16 @@ module system_wrapper
   // Module: inst_system_ps_wrapper
   //
   // Wraps all of the RISCV CPU core and its devices.
-  system_ps_wrapper inst_system_ps_wrapper (
 `ifdef _JTAG_IO
+  system_ps_wrapper_jtag 
+  inst_system_ps_wrapper_jtag (
     .tck(tck),
     .tms(tms),
     .tdi(tdi),
     .tdo(tdo),
+`else
+  system_ps_wrapper
+  inst_system_ps_wrapper (
 `endif
     .aclk(axi_cpu_clk),
     .arstn(sys_rstgen_peripheral_aresetn),

@@ -1,5 +1,6 @@
 # Veronica AXI Baremetal FPGA Project
 ### Contains core files and scripts to generate a Vexriscv platform using fusesoc.
+---
 
 ![image](docs/manual/img/AFRL.png)
 
@@ -25,7 +26,7 @@
 ### DOCUMENTATION
   For detailed usage information, please navigate to one of the following sources. They are the same, just in a different format.
 
-  - [veronica_axi_baremetal.pdf](docs/manual/veronica_axi_baremetal.pdf)
+  - [veronica_axi.pdf](docs/manual/veronica_axi.pdf)
   - [github page](https://johnathan-convertino-afrl.github.io/veronica_axi_baremetal/)
 
 ### DEPENDENCIES
@@ -62,3 +63,15 @@
   - nexys-a7-100t_uc_jtag_io            : Build for nexys-a7-100t digilent development board with standard Veronica RISCV and JTAG using IO pins.
   - nexys-a7-100t_uc_secure_jtag_bscane : Build for nexys-a7-100t digilent development board with PMP enabled Veronica RISCV using Xilinx BSCANE JTAG.
   - nexys-a7-100t_uc_jtag_bscane        : Build for nexys-a7-100t digilent development board with standard Veronica RISCV using Xilinx BSCANE JTAG.
+  
+  
+Programmer is broken in Linux, use openFPGAloader.
+
+openFPGAloader -c ft2232 filename.bit
+
+The bit file is located in the impl folder of the project.
+
+openOCD can also be used if a svf file is generated from the programmer.
+
+Also the lattice programmer can be user if the ftdi_sio usbserial modules are rmmod.
+Plus the usual JTAG adapter udev permissions (plugdev)
