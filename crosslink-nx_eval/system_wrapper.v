@@ -68,12 +68,19 @@ module system_wrapper
   wire sys_clk;
   wire debug_rst;
   
-  reg [ 7:0] r_rst_counter;
-  reg r_peripheral_areset;
-  reg r_peripheral_aresetn;
-  reg r_ddr_peripheral_reset;
+  reg [ 3:0] r_leds           = 0;
+  reg [ 7:0] r_rst_counter    = 8'hFF;
+  reg r_peripheral_areset     = 1'b1;
+  reg r_peripheral_aresetn    = 1'b0;
+  reg r_ddr_peripheral_reset  = 1'b1;
   
   assign spi_csn = s_spi_csn[0];
+  
+  assign leds[0] = r_ddr_peripheral_reset;
+  assign leds[1] = r_peripheral_areset;
+  assign leds[2] = r_peripheral_aresetn;
+  assign leds[6:3] = r_leds;
+  assign leds[7] = resetn;
   
   //225.0 MHz
   clk_osc_1 inst_clk_osc_1 (
@@ -84,7 +91,6 @@ module system_wrapper
   //50 MHz
   clk_wiz_1 inst_clk_wiz_1 (
     .clkop_o(sys_clk),
-    .rstn_i(resetn),
     .clki_i(osc_clk)
   );
   
@@ -160,8 +166,8 @@ module system_wrapper
     .irq(3'b000),
     .uart_rxd(ftdi_tx),
     .uart_txd(ftdi_rx),
-    .gpio_io_i(gpio_write),
-    .gpio_io_o(gpio_read),
+    .gpio_io_i(0),
+    .gpio_io_o(),
     .gpio_io_t(),
     .spi_miso(spi_miso),
     .spi_mosi(spi_mosi),
@@ -171,11 +177,13 @@ module system_wrapper
   );
   
   //reset sync
-  always @(posedge sys_clk or negedge resetn)
+  always @(posedge sys_clk)
   begin
     if(resetn == 1'b0)
     begin
-      r_rst_counter           <= 0;
+      r_rst_counter           <= 8'hFF;
+      
+      r_leds                  <= 0;
       
       r_ddr_peripheral_reset  <= 1'b1;
       r_peripheral_areset     <= 1'b1;
@@ -185,10 +193,12 @@ module system_wrapper
       r_peripheral_areset     <= r_peripheral_areset;
       r_peripheral_aresetn    <= r_peripheral_aresetn;
       
-      r_rst_counter <= r_rst_counter + 1;
+      r_rst_counter <= r_rst_counter - 1;
       
-      if(r_rst_counter == 8'hFF)
+      if(r_rst_counter == 0)
       begin
+        r_leds <= 4'b1111;
+      
         r_rst_counter <= r_rst_counter;
         
         r_ddr_peripheral_reset <= 1'b0;
@@ -198,7 +208,7 @@ module system_wrapper
       
       if(debug_rst == 1'b1)
       begin
-        r_rst_counter <= 0;
+        r_rst_counter <= 8'hFF;
         
         r_ddr_peripheral_reset <= 1'b1;
         r_peripheral_areset    <= 1'b1;
