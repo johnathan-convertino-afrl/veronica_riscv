@@ -33,7 +33,7 @@
 `timescale 1ns/100ps
 
 /*
- * Module: system_ps_wrapper
+ * Module: system_ps_wrapper_jtag
  *
  * System wrapper for ps.
  *
@@ -125,8 +125,12 @@
  * sd_cmd         - sd card
  * sd_dat         - sd card
  */
-module system_ps_wrapper
+module system_ps_wrapper_jtag
   (
+    input   wire            tck,
+    input   wire            tms,
+    input   wire            tdi,
+    output  wire            tdo,
     input   wire            aclk,
     input   wire            arstn,
     input   wire            arst,
@@ -200,6 +204,7 @@ module system_ps_wrapper
     output  wire            spi_sclk,
     output  wire            debug_rst
   );
+
   //irq
   wire           uart_irq;
   wire           spi_irq;
@@ -268,6 +273,10 @@ module system_ps_wrapper
   // Veronica AXI Vexriscv CPU
   Veronica inst_veronica
   (
+    .io_jtag_tms(tms),
+    .io_jtag_tdi(tdi),
+    .io_jtag_tdo(tdo),
+    .io_jtag_tck(tck),
     .io_aclk(aclk),
     .io_arst(arst),
     .io_debug_rst(debug_rst),

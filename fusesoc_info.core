@@ -4,10 +4,13 @@ name : AFRL:project:veronica_axi:1.0.0
 description: Create a simple Vexrisv SoC for embedded system development.
 
 filesets:
-  tb:
+  tb_cocotb:
     files:
-      - tb/tb_veronica.v : { file_type: verilogSource }
-      
+      - tb/tb_cocotb.py : {file_type : user, copyto : .}
+      - tb/tb_cocotb.v  : { file_type: verilogSource }
+      - tb/export_fix.sh: { file_type: user, copyto: . }
+    depend:
+      - ::jtag_vpi:0-r5
   common:
     files:
       - common/system_ps_axi_perf_wrapper.v         : {file_type : verilogSource}
@@ -78,17 +81,7 @@ filesets:
       - common/system_ps_wrapper.v         : {file_type : verilogSource}
     depend:
       - spinalhdl:cpu:veronica_axi_linux_jtag_xilinx_bscane:1.0.0
-
-  dep_uc_secure_jtag_tb:
-    files:
-    - common/system_ps_wrapper_jtag.v         : {file_type : verilogSource}
-    depend:
-      - spinalhdl:cpu:veronica_axi_secure_jtag_io:1.0.0
-      - AFRL:simulation:clock_stimulator
-      - AFRL:vpi:tcp_server:1.0.0
-      - AFRL:device_converter:fast_axis_uart:1.0.0
-      - ::jtag_vpi:0-r5
-
+      
 targets:
 
   default: &default
@@ -154,16 +147,30 @@ targets:
     <<: *crosslink-nx_eval
     description: Build for crosslink-nx_eval development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_io]
-
-  sim_uc_secure_jtag:
+      
+  sim_cocotb:
     <<: *default
-    description: Simulate with JTAG TCP server, UART TCP server, and GPIO TCP server
+    description: Cocotb unit tests
     default_tool: icarus
-    toplevel: tb_veronica
-    filesets_append: [tb, dep_uc_secure_jtag_tb]
+    toplevel: tb_cocotb
+    filesets_append: [tb_cocotb, dep_uc_secure_jtag_io]
+    hooks:
+      pre_run: ["tool_icarus ? (add_export)"]
     tools:
       icarus:
-        iverilog_options: 
-        - -g2005-sv
+        iverilog_options: ["-g2005-sv"]
+        vvp_options: ["-M", "`cocotb-config --lib-dir`", "-m", "`cocotb-config --lib-name vpi icarus`"]
     parameters:
       - jtag_vpi_enable=true
+      - CLOCK_SPEED
+
+parameters:
+  CLOCK_SPEED:
+    datatype    : int
+    default     : 100000000
+    description : aclk frequency in Hz, must be 2 MHz or above.
+    paramtype   : vlogparam
+    
+scripts:
+  add_export:
+    cmd : [bash, export_fix.sh]
