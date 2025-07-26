@@ -1,5 +1,5 @@
 //******************************************************************************
-//  file:     system_ps_wrapper.v
+//  file:     system_ps_axi_perf_wrapper.v
 //
 //  author:   JAY CONVERTINO
 //
@@ -125,7 +125,9 @@
  * sd_cmd         - sd card
  * sd_dat         - sd card
  */
-module system_ps_axi_perf_wrapper
+module system_ps_axi_perf_wrapper #(
+    parameter  CLK_FREQ_MHZ = 100
+  )
   (
     input   wire            aclk,
     input   wire            arstn,
@@ -269,7 +271,7 @@ module system_ps_axi_perf_wrapper
     .ADDRESS_WIDTH(32),
     .BUS_WIDTH(4),
     .WORD_WIDTH(1),
-    .CLOCK_SPEED(50000000),
+    .CLOCK_SPEED(CLK_FREQ_MHZ*1000000),
     .SELECT_WIDTH(32),
     .DEFAULT_RATE_DIV(0),
     .DEFAULT_CPOL(0),
@@ -309,7 +311,7 @@ module system_ps_axi_perf_wrapper
   axi_lite_uart_lite #(
     .ADDRESS_WIDTH(32),
     .BUS_WIDTH(4),
-    .CLOCK_SPEED(50000000),
+    .CLOCK_SPEED(CLK_FREQ_MHZ*1000000),
     .BAUD_RATE(115200),
     .PARITY_TYPE(0),
     .STOP_BITS(1),

@@ -25,6 +25,17 @@ filesets:
       - AFRL:utility:digilent_nexys-a7-100t_board_base_constr:1.0.0
       - AFRL:utility:digilent_nexys-a7-100t_board_base_ddr_cfg:1.0.0
       - AFRL:utility:vivado_board_support_packages
+      
+  genesys2:
+    files:
+      - genesys2/system_wrapper.v     : {file_type : verilogSource}
+      - genesys2/system_constr.tcl    : {file_type : SDC}
+      - genesys2/system_gen_ps.tcl    : {file_type : tclSource}
+      - genesys2/system_gen.tcl       : {file_type : tclSource}
+    depend:
+      - AFRL:utility:digilent_genesys2_board_base_constr:1.0.0
+      - AFRL:utility:digilent_genesys2_board_base_ddr_cfg:1.0.0
+      - AFRL:utility:vivado_board_support_packages
 
   crosslink-nx_eval:
     files:
@@ -122,6 +133,42 @@ targets:
   nexys-a7-100t_linux_jtag_bscane:
     <<: *nexys-a7-100t
     description: Build for nexys-a7-100t digilent development board with Linux Veronica RISCV.
+    filesets_append : [dep_linux_jtag_bscane]
+    
+  genesys2: &genesys2
+    <<: *default
+    description: Base for genesys2 digilent development board builds, do not use.
+    default_tool: vivado
+    filesets_append : [genesys2]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: digilentinc.com:genesys2:part0:1.1
+        part: xc7k325tffg900-2
+
+  genesys2_uc_secure_jtag_io:
+    <<: *genesys2
+    description: Build for genesys2 digilent development board with PMP enabled Veronica RISCV.
+    filesets_append : [dep_uc_secure_jtag_io, dep_vivado_jtag_io]
+
+  genesys2_uc_jtag_io:
+    <<: *genesys2
+    description: Build for genesys2 digilent development board with standard Veronica RISCV.
+    filesets_append : [dep_uc_jtag_io, dep_vivado_jtag_io]
+
+  genesys2_uc_secure_jtag_bscane:
+    <<: *genesys2
+    description: Build for genesys2 digilent development board with PMP enabled Veronica RISCV.
+    filesets_append : [dep_uc_secure_jtag_bscane]
+
+  genesys2_uc_jtag_bscane:
+    <<: *genesys2
+    description: Build for genesys2 digilent development board with standard Veronica RISCV.
+    filesets_append : [dep_uc_jtag_bscane]
+
+  genesys2_linux_jtag_bscane:
+    <<: *genesys2
+    description: Build for genesys2 digilent development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_bscane]
     
   crosslink-nx_eval: &crosslink-nx_eval

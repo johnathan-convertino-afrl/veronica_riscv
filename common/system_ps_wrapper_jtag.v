@@ -125,7 +125,9 @@
  * sd_cmd         - sd card
  * sd_dat         - sd card
  */
-module system_ps_wrapper_jtag
+module system_ps_wrapper_jtag #(
+    parameter  CLK_FREQ_MHZ = 100
+  )
   (
     input   wire            tck,
     input   wire            tms,
@@ -231,8 +233,9 @@ module system_ps_wrapper_jtag
   wire [ 2:0]    s_axi_perf_ARPROT;
   wire [ 2:0]    s_axi_perf_AWPROT;
 
-  system_ps_axi_perf_wrapper inst_system_ps_axi_perf_wrapper
-  (
+  system_ps_axi_perf_wrapper  #(
+    .CLK_FREQ_MHZ(CLK_FREQ_MHZ)
+  ) inst_system_ps_axi_perf_wrapper (
     .aclk(aclk),
     .arstn(arstn),
     .s_axi_perf_AWVALID(s_axi_perf_AWVALID),

@@ -72,11 +72,11 @@ module system_wrapper
   reg [ 7:0] r_rst_counter    = 8'hFF;
   reg r_peripheral_areset     = 1'b1;
   reg r_peripheral_aresetn    = 1'b0;
-  reg r_ddr_peripheral_reset  = 1'b1;
+  reg r_ddr_peripheral_areset = 1'b1;
   
   assign spi_csn = s_spi_csn[0];
   
-  assign leds[0] = r_ddr_peripheral_reset;
+  assign leds[0] = r_ddr_peripheral_areset;
   assign leds[1] = r_peripheral_areset;
   assign leds[2] = r_peripheral_aresetn;
   assign leds[6:3] = r_leds;
@@ -88,7 +88,7 @@ module system_wrapper
     .hf_clk_out_o(osc_clk)
   );
 
-  //50 MHz
+  //50 MHz out from 225 in
   clk_wiz_1 inst_clk_wiz_1 (
     .clkop_o(sys_clk),
     .clki_i(osc_clk)
@@ -97,7 +97,9 @@ module system_wrapper
   // Module: inst_system_ps_wrapper
   //
   // Wraps all of the RISCV CPU core and its devices.
-  system_ps_wrapper_jtag inst_system_ps_wrapper_jtag (
+  system_ps_wrapper_jtag #(
+    .CLK_FREQ_MHZ(50)
+  ) inst_system_ps_wrapper_jtag (
     .tck(tck),
     .tms(tms),
     .tdi(tdi),
@@ -106,7 +108,7 @@ module system_wrapper
     .arstn(r_peripheral_aresetn),
     .arst(r_peripheral_areset),
     .ddr_clk(sys_clk),
-    .ddr_rst(r_ddr_peripheral_reset),
+    .ddr_rst(r_ddr_peripheral_areset),
     .m_axi_mbus_araddr(),
     .m_axi_mbus_arburst(),
     .m_axi_mbus_arcache(),
@@ -177,21 +179,21 @@ module system_wrapper
   );
   
   //reset sync
-  always @(posedge sys_clk)
+  always @(posedge sys_clk or negedge resetn or posedge debug_rst)
   begin
-    if(resetn == 1'b0)
+    if(resetn == 1'b0 || debug_rst == 1'b1)
     begin
       r_rst_counter           <= 8'hFF;
       
       r_leds                  <= 0;
       
-      r_ddr_peripheral_reset  <= 1'b1;
-      r_peripheral_areset     <= 1'b1;
-      r_peripheral_aresetn    <= 1'b0;
+      r_ddr_peripheral_areset  <= 1'b1;
+      r_peripheral_areset      <= 1'b1;
+      r_peripheral_aresetn     <= 1'b0;
     end else begin
-      r_ddr_peripheral_reset  <= r_ddr_peripheral_reset;
-      r_peripheral_areset     <= r_peripheral_areset;
-      r_peripheral_aresetn    <= r_peripheral_aresetn;
+      r_ddr_peripheral_areset  <= r_ddr_peripheral_areset;
+      r_peripheral_areset      <= r_peripheral_areset;
+      r_peripheral_aresetn     <= r_peripheral_aresetn;
       
       r_rst_counter <= r_rst_counter - 1;
       
@@ -201,18 +203,9 @@ module system_wrapper
       
         r_rst_counter <= r_rst_counter;
         
-        r_ddr_peripheral_reset <= 1'b0;
-        r_peripheral_areset    <= 1'b0;
-        r_peripheral_aresetn   <= 1'b1;
-      end
-      
-      if(debug_rst == 1'b1)
-      begin
-        r_rst_counter <= 8'hFF;
-        
-        r_ddr_peripheral_reset <= 1'b1;
-        r_peripheral_areset    <= 1'b1;
-        r_peripheral_aresetn   <= 1'b0;
+        r_ddr_peripheral_areset <= 1'b0;
+        r_peripheral_areset     <= 1'b0;
+        r_peripheral_aresetn    <= 1'b1;
       end
     end
   end

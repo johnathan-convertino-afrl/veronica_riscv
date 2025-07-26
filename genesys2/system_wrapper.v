@@ -45,34 +45,32 @@
  * tdo                    - JTAG
  * clk                    - Master Input Clock
  * resetn                 - Master Reset Input
- * ddr2_addr              - DDR interface
- * ddr2_ba                - DDR interface
- * ddr2_cas_n             - DDR interface
- * ddr2_ck_n              - DDR interface
- * ddr2_ck_p              - DDR interface
- * ddr2_cke               - DDR interface
- * ddr2_cs_n              - DDR interface
- * ddr2_dm                - DDR interface
- * ddr2_dq                - DDR interface
- * ddr2_dqs_n             - DDR interface
- * ddr2_dqs_p             - DDR interface
- * ddr2_odt               - DDR interface
- * ddr2_ras_n             - DDR interface
- * ddr2_reset_n           - DDR interface
- * ddr2_we_n              - DDR interface
+ * ddr3_addr              - DDR interface
+ * ddr3_ba                - DDR interface
+ * ddr3_cas_n             - DDR interface
+ * ddr3_ck_n              - DDR interface
+ * ddr3_ck_p              - DDR interface
+ * ddr3_cke               - DDR interface
+ * ddr3_cs_n              - DDR interface
+ * ddr3_dm                - DDR interface
+ * ddr3_dq                - DDR interface
+ * ddr3_dqs_n             - DDR interface
+ * ddr3_dqs_p             - DDR interface
+ * ddr3_odt               - DDR interface
+ * ddr3_ras_n             - DDR interface
+ * ddr3_reset_n           - DDR interface
+ * ddr3_we_n              - DDR interface
  * leds                   - board leds
  * slide_switches         - board slide switches
  * ftdi_tx                - FTDI UART TX
  * ftdi_rx                - FTDI UART RX
- * ftdi_rts               - FTDI UART RTS
- * ftdi_cts               - FTDI UART CTS
  * sd_spi_miso            - SD CARD Master In Master Out SPI
  * sd_spi_mosi            - SD CARD Master Out Master In SPI
  * sd_spi_csn             - SD CARD Chip Select SPI
  * sd_spi_sclk            - SD CARD clock SPI
  */
 module system_wrapper #(
-    parameter CLK_FREQ_MHZ = 50
+    parameter CLK_FREQ_MHZ = 200
   )
   (
 `ifdef _JTAG_IO
@@ -81,29 +79,28 @@ module system_wrapper #(
     input           tdi,
     output          tdo,
 `endif
-    input             clk,
+    input             clk_p,
+    input             clk_n,
     input             resetn,
-    inout   [12:0]    ddr2_addr,
-    inout   [ 2:0]    ddr2_ba,
-    inout             ddr2_cas_n,
-    inout             ddr2_ck_n,
-    inout             ddr2_ck_p,
-    inout             ddr2_cke,
-    inout             ddr2_cs_n,
-    inout   [ 1:0]    ddr2_dm,
-    inout   [15:0]    ddr2_dq,
-    inout   [ 1:0]    ddr2_dqs_n,
-    inout   [ 1:0]    ddr2_dqs_p,
-    inout             ddr2_odt,
-    inout             ddr2_ras_n,
-    inout             ddr2_reset_n,
-    inout             ddr2_we_n,
-    output  [15:0]    leds,
-    input   [15:0]    slide_switches,
+    inout   [14:0]    ddr3_addr,
+    inout   [ 2:0]    ddr3_ba,
+    inout             ddr3_cas_n,
+    inout             ddr3_ck_n,
+    inout             ddr3_ck_p,
+    inout             ddr3_cke,
+    inout             ddr3_cs_n,
+    inout   [ 3:0]    ddr3_dm,
+    inout   [31:0]    ddr3_dq,
+    inout   [ 3:0]    ddr3_dqs_n,
+    inout   [ 3:0]    ddr3_dqs_p,
+    inout             ddr3_odt,
+    inout             ddr3_ras_n,
+    inout             ddr3_reset_n,
+    inout             ddr3_we_n,
+    output  [ 7:0]    leds,
+    input   [ 7:0]    slide_switches,
     input             ftdi_tx,
     output            ftdi_rx,
-    input             ftdi_rts,
-    output            ftdi_cts,
     input             sd_spi_miso,
     output            sd_spi_mosi,
     output            sd_spi_csn,
@@ -111,8 +108,6 @@ module system_wrapper #(
     output            sd_reset
   );
   
-  assign ftdi_cts = ftdi_rts;
-
   // Memory bus wires
   wire            m_axi_mbus_awvalid;
   wire            m_axi_mbus_awready;
@@ -154,9 +149,8 @@ module system_wrapper #(
   
   //clocks
   wire           axi_cpu_clk;
-  wire           ddr_clk;
-  wire           clk_ibufg;
-  wire           clk_bufg;
+  wire           clk;
+  wire           clk_ibuf;
 
   //resets
   wire [ 0:0]    ddr_rstgen_peripheral_aresetn;
@@ -176,24 +170,24 @@ module system_wrapper #(
 
   assign sd_reset = 1'b1;
   
-  IBUFG i_ibufg (
-    .I (clk),
-    .O (clk_ibufg));
+  IBUFGDS i_ibufgds (
+    .I (clk_p),
+    .IB (clk_n),
+    .O (clk_ibuf));
 
   BUFG i_bufg (
-    .I (clk_ibufg),
-    .O (clk_bufg));
-  
+    .I (clk_ibuf),
+    .O (clk));
+
   // Module: inst_clk_wiz_1
   //
-  // Generate system clocks
+  // Generate system clocks from main input clock of 200 Mhz for cpu 50 Mhz.
   clk_wiz_1 inst_clk_wiz_1
   (
-    .clk_in1(clk_bufg),
-    .clk_out1(axi_cpu_clk),
-    .clk_out2(ddr_clk)
+    .clk_in1(clk),
+    .clk_out1(axi_cpu_clk)
   );
-  
+
   // Module: inst_ddr_rstgen
   //
   // Generate DDR Reset
@@ -225,7 +219,7 @@ module system_wrapper #(
   
   // Module: inst_axi_ddr_ctrl
   //
-  // AXI DDR Controller, 200 MHz in for 50 Mhz out (200/4 = 50).
+  // AXI DDR Controller, ui clock is 200 Mhz output (800/4 = 200 Mhz).
   axi_ddr_ctrl inst_axi_ddr_ctrl
   (
     .init_calib_complete(),
@@ -236,20 +230,21 @@ module system_wrapper #(
     .app_ref_ack(),
     .app_zq_ack(),
     .aresetn(ddr_rstgen_peripheral_aresetn),
-    .ddr2_addr(ddr2_addr),
-    .ddr2_ba(ddr2_ba),
-    .ddr2_cas_n(ddr2_cas_n),
-    .ddr2_ck_n(ddr2_ck_n),
-    .ddr2_ck_p(ddr2_ck_p),
-    .ddr2_cke(ddr2_cke),
-    .ddr2_cs_n(ddr2_cs_n),
-    .ddr2_dm(ddr2_dm),
-    .ddr2_dq(ddr2_dq),
-    .ddr2_dqs_n(ddr2_dqs_n),
-    .ddr2_dqs_p(ddr2_dqs_p),
-    .ddr2_odt(ddr2_odt),
-    .ddr2_ras_n(ddr2_ras_n),
-    .ddr2_we_n(ddr2_we_n),
+    .ddr3_addr(ddr3_addr),
+    .ddr3_ba(ddr3_ba),
+    .ddr3_cas_n(ddr3_cas_n),
+    .ddr3_ck_n(ddr3_ck_n),
+    .ddr3_ck_p(ddr3_ck_p),
+    .ddr3_cke(ddr3_cke),
+    .ddr3_cs_n(ddr3_cs_n),
+    .ddr3_dm(ddr3_dm),
+    .ddr3_dq(ddr3_dq),
+    .ddr3_dqs_n(ddr3_dqs_n),
+    .ddr3_dqs_p(ddr3_dqs_p),
+    .ddr3_odt(ddr3_odt),
+    .ddr3_ras_n(ddr3_ras_n),
+    .ddr3_we_n(ddr3_we_n),
+    .ddr3_reset_n(ddr3_reset_n),
     .mmcm_locked(axi_ddr_ctrl_mmcm_locked),
     .s_axi_araddr(m_axi_mbus_araddr & 32'h0FFFFFFF),
     .s_axi_arburst(m_axi_mbus_arburst),
@@ -288,9 +283,8 @@ module system_wrapper #(
     .s_axi_wready(m_axi_mbus_wready),
     .s_axi_wstrb(m_axi_mbus_wstrb),
     .s_axi_wvalid(m_axi_mbus_wvalid),
-    .sys_clk_i(clk_bufg),
+    .sys_clk_i(clk),
     .sys_rst(resetn),
-    .clk_ref_i(ddr_clk),
     .ui_clk(axi_ddr_ctrl_ui_clk),
     .ui_clk_sync_rst(axi_ddr_ctrl_ui_clk_sync_rst)
   );
@@ -299,7 +293,7 @@ module system_wrapper #(
   //
   // Wraps all of the RISCV CPU core and its devices.
 `ifdef _JTAG_IO
-  system_ps_wrapper #(
+  system_ps_wrapper_jtag #(
     .CLK_FREQ_MHZ(CLK_FREQ_MHZ)
   ) inst_system_ps_wrapper_jtag (
     .tck(tck),

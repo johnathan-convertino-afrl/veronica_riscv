@@ -3,16 +3,16 @@ set_msg_config -id "Common 17-55" -new_severity WARNING
 
 ip_vlvn_version_check "xilinx.com:ip:clk_wiz:6.0"
 
-# create a pll clock IP with a 100 MHz clock
+# create a pll clock IP with a 225 MHz clock from DDR UI out (900/4 = 225)
 create_ip -vlnv xilinx.com:ip:clk_wiz:6.0 -module_name clk_wiz_1
 set_property CONFIG.PRIMITIVE MMCM [get_ips clk_wiz_1]
-set_property CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {50.000} [get_ips clk_wiz_1]
+set_property CONFIG.CLKOUT1_REQUESTED_OUT_FREQ 50 [get_ips clk_wiz_1]
 set_property CONFIG.USE_LOCKED false [get_ips clk_wiz_1]
-set_property CONFIG.PRIM_IN_FREQ 100.000 [get_ips clk_wiz_1]
+set_property CONFIG.PRIM_IN_FREQ 200.000 [get_ips clk_wiz_1]
 set_property CONFIG.USE_RESET false [get_ips clk_wiz_1]
-set_property CONFIG.CLKOUT2_USED {true} [get_ips clk_wiz_1]
-set_property CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {200.000} [get_ips clk_wiz_1]
 set_property CONFIG.PRIM_SOURCE {No_buffer} [get_ips clk_wiz_1]
+# set_property CONFIG.CLKOUT2_USED {false} [get_ips clk_wiz_1]
+# set_property CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {200.000} [get_ips clk_wiz_1]
 
 set CLK1_FREQ_MHZ [get_property CONFIG.CLKOUT1_REQUESTED_OUT_FREQ [get_ips clk_wiz_1]]
 
