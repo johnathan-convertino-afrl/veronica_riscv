@@ -48,27 +48,27 @@ filesets:
       - AFRL:utility:digilent_NetFPGA-1G-CML_board_base_ddr_cfg:1.0.0
       - AFRL:utility:vivado_board_support_packages
       
-#   KC705:
-#     files:
-#       - KC705/system_wrapper.v     : {file_type : verilogSource}
-#       - KC705/system_constr.tcl    : {file_type : SDC}
-#       - KC705/system_gen_ps.tcl    : {file_type : tclSource}
-#       - KC705/system_gen.tcl       : {file_type : tclSource}
-#     depend:
-#       - AFRL:utility:xilinx_kc705_board_base_constr:1.0.0
-#       - AFRL:utility:xilinx_kc705_board_base_ddr_cfg:1.0.0
-#       - AFRL:utility:vivado_board_support_packages
-#       
-#   VC707:
-#     files:
-#       - VC707/system_wrapper.v     : {file_type : verilogSource}
-#       - VC707/system_constr.tcl    : {file_type : SDC}
-#       - VC707/system_gen_ps.tcl    : {file_type : tclSource}
-#       - VC707/system_gen.tcl       : {file_type : tclSource}
-#     depend:
-#       - AFRL:utility:xilinx_vc707_board_base_constr:1.0.0
-#       - AFRL:utility:xilinx_vc707_board_base_ddr_cfg:1.0.0
-#       - AFRL:utility:vivado_board_support_packages
+  KC705:
+    files:
+      - KC705/system_wrapper.v     : {file_type : verilogSource}
+      - KC705/system_constr.tcl    : {file_type : SDC}
+      - KC705/system_gen_ps.tcl    : {file_type : tclSource}
+      - KC705/system_gen.tcl       : {file_type : tclSource}
+    depend:
+      - AFRL:utility:xilinx_kc705_board_base_constr:1.0.0
+      - AFRL:utility:xilinx_kc705_board_base_ddr_cfg:1.0.0
+      - AFRL:utility:vivado_board_support_packages
+      
+  VC707:
+    files:
+      - VC707/system_wrapper.v     : {file_type : verilogSource}
+      - VC707/system_constr.tcl    : {file_type : SDC}
+      - VC707/system_gen_ps.tcl    : {file_type : tclSource}
+      - VC707/system_gen.tcl       : {file_type : tclSource}
+    depend:
+      - AFRL:utility:xilinx_vc707_board_base_constr:1.0.0
+      - AFRL:utility:xilinx_vc707_board_base_ddr_cfg:1.0.0
+      - AFRL:utility:vivado_board_support_packages
 
   crosslink-nx_eval:
     files:
@@ -240,77 +240,77 @@ targets:
     description: Build for NetFPGA-1G-CML digilent development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_bscane]
     
-#   kc705: &kc705
-#     <<: *default
-#     description: Base for kc705 xilinx development board builds, do not use.
-#     default_tool: vivado
-#     filesets_append : [KC705]
-#     tools:
-#       vivado:
-#         # source_mgmt_mode: DisplayOnly
-#         # board_part: digilentinc.com:genesys2:part0:1.1
-#         # part: xc7k325tffg900-2
-# 
-#   kc705_uc_secure_jtag_io:
-#     <<: *kc705
-#     description: Build for kc705 xilinx development board with PMP enabled Veronica RISCV.
-#     filesets_append : [dep_uc_secure_jtag_io, dep_vivado_jtag_io]
-# 
-#   kc705_uc_jtag_io:
-#     <<: *kc705
-#     description: Build for kc705 xilinx development board with standard Veronica RISCV.
-#     filesets_append : [dep_uc_jtag_io, dep_vivado_jtag_io]
-# 
-#   kc705_uc_secure_jtag_bscane:
-#     <<: *kc705
-#     description: Build for kc705 xilinx development board with PMP enabled Veronica RISCV.
-#     filesets_append : [dep_uc_secure_jtag_bscane]
-# 
-#   kc705_uc_jtag_bscane:
-#     <<: *kc705
-#     description: Build for kc705 xilinx development board with standard Veronica RISCV.
-#     filesets_append : [dep_uc_jtag_bscane]
-# 
-#   kc705_linux_jtag_bscane:
-#     <<: *kc705
-#     description: Build for kc705 xilinx development board with Linux Veronica RISCV.
-#     filesets_append : [dep_linux_jtag_bscane]
-#     
-#   vc707: &vc707
-#     <<: *default
-#     description: Base for VC707 xilinx development board builds, do not use.
-#     default_tool: vivado
-#     filesets_append : [VC707]
-#     tools:
-#       vivado:
-#         # source_mgmt_mode: DisplayOnly
-#         # board_part: digilentinc.com:genesys2:part0:1.1
-#         # part: xc7k325tffg900-2
-# 
-#   vc707_uc_secure_jtag_io:
-#     <<: *vc707
-#     description: Build for vc707 xilinx development board with PMP enabled Veronica RISCV.
-#     filesets_append : [dep_uc_secure_jtag_io, dep_vivado_jtag_io]
-# 
-#   vc707_uc_jtag_io:
-#     <<: *vc707
-#     description: Build for vc707 xilinx development board with standard Veronica RISCV.
-#     filesets_append : [dep_uc_jtag_io, dep_vivado_jtag_io]
-# 
-#   vc707_uc_secure_jtag_bscane:
-#     <<: *vc707
-#     description: Build for vc707 xilinx development board with PMP enabled Veronica RISCV.
-#     filesets_append : [dep_uc_secure_jtag_bscane]
-# 
-#   vc707_uc_jtag_bscane:
-#     <<: *vc707
-#     description: Build for vc707 xilinx development board with standard Veronica RISCV.
-#     filesets_append : [dep_uc_jtag_bscane]
-# 
-#   vc707_linux_jtag_bscane:
-#     <<: *vc707
-#     description: Build for vc707 xilinx development board with Linux Veronica RISCV.
-#     filesets_append : [dep_linux_jtag_bscane]
+  kc705: &kc705
+    <<: *default
+    description: Base for kc705 xilinx development board builds, do not use.
+    default_tool: vivado
+    filesets_append : [KC705]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: xilinx.com:kc705:part0:1.6
+        part: xc7k325tffg900-2
+
+  # kc705_uc_secure_jtag_io:
+  #   <<: *kc705
+  #   description: Build for kc705 xilinx development board with PMP enabled Veronica RISCV.
+  #   filesets_append : [dep_uc_secure_jtag_io, dep_vivado_jtag_io]
+  # 
+  # kc705_uc_jtag_io:
+  #   <<: *kc705
+  #   description: Build for kc705 xilinx development board with standard Veronica RISCV.
+  #   filesets_append : [dep_uc_jtag_io, dep_vivado_jtag_io]
+
+  kc705_uc_secure_jtag_bscane:
+    <<: *kc705
+    description: Build for kc705 xilinx development board with PMP enabled Veronica RISCV.
+    filesets_append : [dep_uc_secure_jtag_bscane]
+
+  kc705_uc_jtag_bscane:
+    <<: *kc705
+    description: Build for kc705 xilinx development board with standard Veronica RISCV.
+    filesets_append : [dep_uc_jtag_bscane]
+
+  kc705_linux_jtag_bscane:
+    <<: *kc705
+    description: Build for kc705 xilinx development board with Linux Veronica RISCV.
+    filesets_append : [dep_linux_jtag_bscane]
+    
+  vc707: &vc707
+    <<: *default
+    description: Base for VC707 xilinx development board builds, do not use.
+    default_tool: vivado
+    filesets_append : [VC707]
+    tools:
+      vivado:
+        source_mgmt_mode: DisplayOnly
+        board_part: xilinx.com:vc707:part0:1.4
+        part: xc7vx485tffg1761-2
+
+  # vc707_uc_secure_jtag_io:
+  #   <<: *vc707
+  #   description: Build for vc707 xilinx development board with PMP enabled Veronica RISCV.
+  #   filesets_append : [dep_uc_secure_jtag_io, dep_vivado_jtag_io]
+  # 
+  # vc707_uc_jtag_io:
+  #   <<: *vc707
+  #   description: Build for vc707 xilinx development board with standard Veronica RISCV.
+  #   filesets_append : [dep_uc_jtag_io, dep_vivado_jtag_io]
+
+  vc707_uc_secure_jtag_bscane:
+    <<: *vc707
+    description: Build for vc707 xilinx development board with PMP enabled Veronica RISCV.
+    filesets_append : [dep_uc_secure_jtag_bscane]
+
+  vc707_uc_jtag_bscane:
+    <<: *vc707
+    description: Build for vc707 xilinx development board with standard Veronica RISCV.
+    filesets_append : [dep_uc_jtag_bscane]
+
+  vc707_linux_jtag_bscane:
+    <<: *vc707
+    description: Build for vc707 xilinx development board with Linux Veronica RISCV.
+    filesets_append : [dep_linux_jtag_bscane]
     
   crosslink-nx_eval: &crosslink-nx_eval
     <<: *default
