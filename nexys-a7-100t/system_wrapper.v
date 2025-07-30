@@ -107,8 +107,7 @@ module system_wrapper #(
     input             sd_spi_miso,
     output            sd_spi_mosi,
     output            sd_spi_csn,
-    output            sd_spi_sclk,
-    output            sd_reset
+    output            sd_spi_sclk
   );
   
   assign ftdi_cts = ftdi_rts;
@@ -174,7 +173,7 @@ module system_wrapper #(
   
   assign sd_spi_csn = s_spi_csn[0];
 
-  assign sd_reset = 1'b1;
+  // assign sd_reset = 1'b1;
   
   IBUFG i_ibufg (
     .I (clk),
