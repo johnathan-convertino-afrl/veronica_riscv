@@ -13,12 +13,26 @@ set_property CONFIG.USE_RESET false [get_ips clk_wiz_1]
 set_property CONFIG.CLKOUT2_USED {true} [get_ips clk_wiz_1]
 set_property CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {200.000} [get_ips clk_wiz_1]
 set_property CONFIG.PRIM_SOURCE {No_buffer} [get_ips clk_wiz_1]
+set_property CONFIG.CLKOUT3_USED {true} [get_ips clk_wiz_1]
+set_property CONFIG.CLKOUT3_REQUESTED_OUT_FREQ {50.000} [get_ips clk_wiz_1]
 
 set CLK1_FREQ_MHZ [get_property CONFIG.CLKOUT1_REQUESTED_OUT_FREQ [get_ips clk_wiz_1]]
 
-set_property generic CLK_FREQ_MHZ=[expr int($CLK1_FREQ_MHZ)] [current_fileset]
+set_property generic ACLK_FREQ_MHZ=[expr int($CLK1_FREQ_MHZ)] [current_fileset]
 
 set_property generate_synth_checkpoint false [get_files clk_wiz_1.xci]
+
+ip_vlvn_version_check "xilinx.com:ip:proc_sys_reset:5.0"
+
+# create a cpu reset
+create_ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 -module_name cpu_rstgen
+set_property CONFIG.RESET_BOARD_INTERFACE Custom [get_ips cpu_rstgen]
+set_property CONFIG.C_EXT_RST_WIDTH 1 [get_ips cpu_rstgen]
+set_property CONFIG.C_AUX_RST_WIDTH 1 [get_ips cpu_rstgen]
+set_property CONFIG.C_EXT_RESET_HIGH 0 [get_ips cpu_rstgen]
+set_property CONFIG.C_AUX_RESET_HIGH 1 [get_ips cpu_rstgen]
+
+set_property generate_synth_checkpoint false [get_files cpu_rstgen.xci]
 
 ip_vlvn_version_check "xilinx.com:ip:proc_sys_reset:5.0"
 

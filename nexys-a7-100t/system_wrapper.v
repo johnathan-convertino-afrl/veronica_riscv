@@ -72,7 +72,7 @@
  * sd_spi_sclk            - SD CARD clock SPI
  */
 module system_wrapper #(
-    parameter CLK_FREQ_MHZ = 50
+    parameter ACLK_FREQ_MHZ = 50
   )
   (
 `ifdef _JTAG_IO
@@ -107,7 +107,8 @@ module system_wrapper #(
     input             sd_spi_miso,
     output            sd_spi_mosi,
     output            sd_spi_csn,
-    output            sd_spi_sclk
+    output            sd_spi_sclk,
+    output            sd_reset
   );
   
   assign ftdi_cts = ftdi_rts;
@@ -152,8 +153,9 @@ module system_wrapper #(
   wire            m_axi_mbus_rlast;
   
   //clocks
-  wire           axi_cpu_clk;
+  wire           axi_clk;
   wire           ddr_clk;
+  wire           cpu_clk;
   wire           clk_ibufg;
   wire           clk_bufg;
 
@@ -162,6 +164,7 @@ module system_wrapper #(
   wire [ 0:0]    ddr_rstgen_peripheral_areset;
   wire [ 0:0]    sys_rstgen_peripheral_aresetn;
   wire [ 0:0]    sys_rstgen_peripheral_areset;
+  wire [ 0:0]    cpu_rstgen_peripheral_areset;
   wire           debug_rst;
 
   //ddr signals and clocks
@@ -173,7 +176,7 @@ module system_wrapper #(
   
   assign sd_spi_csn = s_spi_csn[0];
 
-  // assign sd_reset = 1'b1;
+  assign sd_reset = sys_rstgen_peripheral_areset;
   
   IBUFG i_ibufg (
     .I (clk),
@@ -189,8 +192,9 @@ module system_wrapper #(
   clk_wiz_1 inst_clk_wiz_1
   (
     .clk_in1(clk_bufg),
-    .clk_out1(axi_cpu_clk),
-    .clk_out2(ddr_clk)
+    .clk_out1(axi_clk),
+    .clk_out2(ddr_clk),
+    .clk_out3(cpu_clk)
   );
   
   // Module: inst_ddr_rstgen
@@ -219,7 +223,22 @@ module system_wrapper #(
     .mb_debug_sys_rst(debug_rst),
     .peripheral_reset(sys_rstgen_peripheral_areset),
     .peripheral_aresetn(sys_rstgen_peripheral_aresetn),
-    .slowest_sync_clk(axi_cpu_clk)
+    .slowest_sync_clk(axi_clk)
+  );
+  
+  // Module: inst_cpu_rstgen
+  //
+  // Generate general system resets
+  cpu_rstgen inst_cpu_rstgen
+  (
+    .aux_reset_in(axi_ddr_ctrl_ui_clk_sync_rst),
+    .dcm_locked(axi_ddr_ctrl_mmcm_locked),
+    .ext_reset_in(resetn),
+    .interconnect_aresetn(),
+    .mb_debug_sys_rst(debug_rst),
+    .peripheral_reset(cpu_rstgen_peripheral_areset),
+    .peripheral_aresetn(),
+    .slowest_sync_clk(cpu_clk)
   );
   
   // Module: inst_axi_ddr_ctrl
@@ -298,8 +317,8 @@ module system_wrapper #(
   //
   // Wraps all of the RISCV CPU core and its devices.
 `ifdef _JTAG_IO
-  system_ps_wrapper #(
-    .CLK_FREQ_MHZ(CLK_FREQ_MHZ)
+  system_ps_wrapper_jtag #(
+    .ACLK_FREQ_MHZ(ACLK_FREQ_MHZ)
   ) inst_system_ps_wrapper_jtag (
     .tck(tck),
     .tms(tms),
@@ -307,10 +326,12 @@ module system_wrapper #(
     .tdo(tdo),
 `else
   system_ps_wrapper #(
-    .CLK_FREQ_MHZ(CLK_FREQ_MHZ)
+    .ACLK_FREQ_MHZ(ACLK_FREQ_MHZ)
   ) inst_system_ps_wrapper (
 `endif
-    .aclk(axi_cpu_clk),
+    .cpu_clk(cpu_clk),
+    .cpu_rst(cpu_rstgen_peripheral_areset),
+    .aclk(axi_clk),
     .arstn(sys_rstgen_peripheral_aresetn),
     .arst(sys_rstgen_peripheral_areset),
     .ddr_clk(axi_ddr_ctrl_ui_clk),

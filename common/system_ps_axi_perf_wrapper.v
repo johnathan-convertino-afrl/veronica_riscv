@@ -273,9 +273,10 @@ module system_ps_axi_perf_wrapper #(
     .WORD_WIDTH(1),
     .CLOCK_SPEED(CLK_FREQ_MHZ*1000000),
     .SELECT_WIDTH(32),
-    .DEFAULT_RATE_DIV(0),
+    .DEFAULT_RATE_DIV(1),
     .DEFAULT_CPOL(0),
-    .DEFAULT_CPHA(0)
+    .DEFAULT_CPHA(0),
+    .FIFO_ENABLE(0)
   ) inst_axi_spi (
     .aclk(aclk),
     .arstn(arstn),

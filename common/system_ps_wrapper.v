@@ -126,9 +126,11 @@
  * sd_dat         - sd card
  */
 module system_ps_wrapper #(
-    parameter  CLK_FREQ_MHZ = 100
+    parameter  ACLK_FREQ_MHZ = 100
   )
   (
+    input   wire            cpu_clk,
+    input   wire            cpu_rst,
     input   wire            aclk,
     input   wire            arstn,
     input   wire            arst,
@@ -229,7 +231,7 @@ module system_ps_wrapper #(
   wire [ 2:0]    s_axi_perf_AWPROT;
 
   system_ps_axi_perf_wrapper #(
-    .CLK_FREQ_MHZ(CLK_FREQ_MHZ)
+    .CLK_FREQ_MHZ(ACLK_FREQ_MHZ)
   ) inst_system_ps_axi_perf_wrapper (
     .aclk(aclk),
     .arstn(arstn),
@@ -271,6 +273,8 @@ module system_ps_wrapper #(
   // Veronica AXI Vexriscv CPU
   Veronica inst_veronica
   (
+    .io_cpu_clk(cpu_clk),
+    .io_cpu_rst(cpu_rst),
     .io_aclk(aclk),
     .io_arst(arst),
     .io_debug_rst(debug_rst),
