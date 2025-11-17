@@ -306,9 +306,9 @@ module system_ps_axi_perf_wrapper #(
     .ss_n(spi_csn)
   );
   
-  // Module: inst_axi_uart
-  //
-  // AXI uart LITE 
+  //   Module: inst_axi_uart
+  //   
+  //   AXI uart LITE 
   axi_lite_uart_lite #(
     .ADDRESS_WIDTH(32),
     .BUS_WIDTH(4),
@@ -345,7 +345,7 @@ module system_ps_axi_perf_wrapper #(
     .tx(uart_txd),
     .rx(uart_rxd)
   );
-
+  
   // Module: inst_axilite_perf_xbar
   //
   // AXI Lite Crossbar for slow speed devices .. sdio, tft vga, double timer, ethernet, spi, qspi, uart, gpio

@@ -3,6 +3,7 @@ set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 
 ## I/O delay constraints
 create_clock -period 20.000 -name VIRTUAL_axi_cpu_clk -waveform {0.000 10.000}
+create_clock -period 100.000 -name fast_spi_clk -waveform {0.000 50.000}
 
 set_input_delay  -clock VIRTUAL_axi_cpu_clk -max 50.000  [get_ports ftdi_tx]
 set_input_delay  -clock VIRTUAL_axi_cpu_clk -min 20.000  [get_ports ftdi_tx]
@@ -47,15 +48,15 @@ if {[get_ports -quiet tck] ne "" } {
 # set_property -dict { PACKAGE_PIN C17    IOSTANDARD LVCMOS33 DRIVE 16 PULLUP true SLEW SLOW} [get_ports { sd_spi_csn }]; #IO_L14N_T2_SRCC_35 Sch=sd_dat[3]
 
 ##Micro SD On Board, SPI
-set_property -dict { PACKAGE_PIN B1    IOSTANDARD LVCMOS33 DRIVE 8 PULLDOWN true SLEW FAST} [get_ports { sd_spi_sclk }]; #IO_L9P_T1_DQS_AD7P_35 Sch=sd_sck
-set_property -dict { PACKAGE_PIN C1    IOSTANDARD LVCMOS33 DRIVE 8 PULLUP true SLEW FAST} [get_ports { sd_spi_mosi }]; #IO_L16N_T2_35 Sch=sd_cmd
+set_property -dict { PACKAGE_PIN B1    IOSTANDARD LVCMOS33 DRIVE 8 PULLDOWN true SLEW SLOW} [get_ports { sd_spi_sclk }]; #IO_L9P_T1_DQS_AD7P_35 Sch=sd_sck
+set_property -dict { PACKAGE_PIN C1    IOSTANDARD LVCMOS33 DRIVE 8 PULLUP true SLEW SLOW} [get_ports { sd_spi_mosi }]; #IO_L16N_T2_35 Sch=sd_cmd
 set_property -dict { PACKAGE_PIN C2    IOSTANDARD LVCMOS33 PULLUP true} [get_ports { sd_spi_miso }]; #IO_L16P_T2_35 Sch=sd_dat[0]
 set_property -dict { PACKAGE_PIN D2    IOSTANDARD LVCMOS33 DRIVE 16 PULLUP true SLEW SLOW} [get_ports { sd_spi_csn }]; #IO_L14N_T2_SRCC_35 Sch=sd_dat[3]
 
 set_output_delay -max 2.000 -clock {fast_spi_clk} [get_ports { sd_spi_mosi }]
 set_output_delay -min 1.000 -clock {fast_spi_clk} [get_ports { sd_spi_mosi }]
-set_output_delay -max 1.000 -clock {fast_spi_clk} [get_ports { sd_spi_csn }]
-set_output_delay -min 0.000 -clock {fast_spi_clk} [get_ports { sd_spi_csn }]
+set_output_delay -max 2.000 -clock {fast_spi_clk} [get_ports { sd_spi_csn }]
+set_output_delay -min 1.000 -clock {fast_spi_clk} [get_ports { sd_spi_csn }]
 
 set_input_delay -max 2.000 -clock {fast_spi_clk} [get_ports { sd_spi_miso }]
 set_input_delay -min 3.000 -clock {fast_spi_clk} [get_ports { sd_spi_miso }]
