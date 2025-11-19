@@ -26,6 +26,10 @@ filesets:
       - AFRL:utility:digilent_nexys-a7-100t_board_base_ddr_cfg:1.0.0
       - AFRL:utility:vivado_board_support_packages
       
+  nexys-a7-100t_bootgen:
+    depend:
+      - AFRL:utility:digilent_veronica_nexys_boot_gen:1.0.0
+      
   genesys2:
     files:
       - genesys2/system_wrapper.v     : {file_type : verilogSource}
@@ -167,6 +171,11 @@ targets:
     <<: *nexys-a7-100t
     description: Build for nexys-a7-100t digilent development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_bscane]
+    
+  nexys-a7-100t_linux_jtag_bscane_bootgen:
+    <<: *nexys-a7-100t
+    description: Build for nexys-a7-100t digilent development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [dep_linux_jtag_bscane, nexys-a7-100t_bootgen]
     
   genesys2: &genesys2
     <<: *default
