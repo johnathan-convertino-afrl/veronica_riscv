@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("SystemVerilogModule:inst_system_ps_wrapper","inst_system_ps_wrapper");NDSummary.OnSummaryLoaded("SystemVerilogModule:inst_system_ps_wrapper",[["SystemVerilog","SystemVerilog"]],[["Modules","Module"]],[[21,0,0,"inst_system_ps_wrapper"]]);
+﻿NDFramePage.OnPageTitleLoaded("SystemVerilogModule:inst_system_ps_wrapper","inst_system_ps_wrapper");NDSummary.OnSummaryLoaded("SystemVerilogModule:inst_system_ps_wrapper",[["SystemVerilog","SystemVerilog"]],[["Modules","Module"]],[[25,0,0,"inst_system_ps_wrapper"]]);

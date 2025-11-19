@@ -1,4 +1,4 @@
-﻿Format: 2.3
+﻿Format: 2.3.1
 
 # This is the main file you use to configure Natural Docs for your project.
 
@@ -82,9 +82,6 @@ Home Page: ../html/other/html.html
 
 Source Folder: ../../../nexys-a7-100t
    Name: nexys-a7-100t_veronica
-
-Source Folder 2: ../../../crosslink-nx_eval
-   Name: crosslink-nx_eval_veronica
 
 
 # This is where you tell Natural Docs which folders it should scan for source

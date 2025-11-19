@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("SystemVerilogModule:inst_cpu_rstgen",{23:"<div class=\"NDToolTip TModule LSystemVerilog\"><div class=\"TTSummary\">Generate general system resets</div></div>"});

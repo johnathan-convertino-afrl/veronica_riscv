@@ -1,4 +1,4 @@
-# Veronica AXI Baremetal FPGA Project
+# Veronica RISCV FPGA Project
 ### Contains core files and scripts to generate a Vexriscv platform using fusesoc.
 ---
 
@@ -26,8 +26,8 @@
 ### DOCUMENTATION
   For detailed usage information, please navigate to one of the following sources. They are the same, just in a different format.
 
-  - [veronica_axi.pdf](docs/manual/veronica_axi.pdf)
-  - [github page](https://johnathan-convertino-afrl.github.io/veronica_axi_baremetal/)
+  - [veronica_axi.pdf](docs/manual/veronica_riscv.pdf)
+  - [github page](https://johnathan-convertino-afrl.github.io/veronica_riscv/)
 
 ### DEPENDENCIES
 #### Build
@@ -58,12 +58,13 @@
 
 * RUN WITH: (fusesoc run --target=zed_bootgen VENDER:CORE:NAME:VERSION)
 * -- target can be one of the below.
-  - nexys-a7-100t                       : Base for nexys-a7-100t digilent development board builds, do not use.
-  - nexys-a7-100t_uc_secure_jtag_io     : Build for nexys-a7-100t digilent development board with PMP enabled Veronica RISCV and JTAG using IO pins.
-  - nexys-a7-100t_uc_jtag_io            : Build for nexys-a7-100t digilent development board with standard Veronica RISCV and JTAG using IO pins.
-  - nexys-a7-100t_uc_secure_jtag_bscane : Build for nexys-a7-100t digilent development board with PMP enabled Veronica RISCV using Xilinx BSCANE JTAG.
-  - nexys-a7-100t_uc_jtag_bscane        : Build for nexys-a7-100t digilent development board with standard Veronica RISCV using Xilinx BSCANE JTAG.
-  
+  - nexys-a7-100t                           : Base for nexys-a7-100t digilent development board builds, do not use.
+  - nexys-a7-100t_uc_secure_jtag_io         : Build for nexys-a7-100t digilent development board with PMP enabled Veronica RISCV and JTAG using IO pins.
+  - nexys-a7-100t_uc_jtag_io                : Build for nexys-a7-100t digilent development board with standard Veronica RISCV and JTAG using IO pins.
+  - nexys-a7-100t_uc_secure_jtag_bscane     : Build for nexys-a7-100t digilent development board with PMP enabled Veronica RISCV using Xilinx BSCANE JTAG.
+  - nexys-a7-100t_uc_jtag_bscane            : Build for nexys-a7-100t digilent development board with standard Veronica RISCV using Xilinx BSCANE JTAG.
+  - nexys-a7-100t_linux_jtag_bscane         : Linux(MMU) build for nexys-a7-100t digilent development board with standard Veronica RISCV using Xilinx BSCANE JTAG.
+  - nexys-a7-100t_linux_jtag_bscane_bootgen : Linux(MMU) build for nexys-a7-100t digilent development board with standard Veronica RISCV using Xilinx BSCANE JTAG.
   
 Programmer is broken in Linux, use openFPGAloader.
 

@@ -1,24 +1,81 @@
 \subsubsection{fusesoc\_info File List}
 \begin{itemize}
+\item tb\_cocotb
+	\begin{itemize}
+	\item {'tb/tb\_cocotb.py': {'file\_type': 'user', 'copyto': '.'}}
+	\item {'tb/tb\_cocotb.v': {'file\_type': 'verilogSource'}}
+	\item {'tb/export\_fix.sh': {'file\_type': 'user', 'copyto': '.'}}
+	\end{itemize}
+\item common
+	\begin{itemize}
+	\item {'common/system\_ps\_axi\_perf\_wrapper.v': {'file\_type': 'verilogSource'}}
+	\end{itemize}
 \item nexys-a7-100t
 	\begin{itemize}
 	\item {'nexys-a7-100t/system\_wrapper.v': {'file\_type': 'verilogSource'}}
 	\item {'nexys-a7-100t/system\_constr.tcl': {'file\_type': 'SDC'}}
 	\item {'nexys-a7-100t/system\_gen\_ps.tcl': {'file\_type': 'tclSource'}}
-	\item {'nexys-a7-100t/system\_ps\_wrapper.v': {'file\_type': 'verilogSource'}}
 	\item {'nexys-a7-100t/system\_gen.tcl': {'file\_type': 'tclSource'}}
+	\end{itemize}
+\item genesys2
+	\begin{itemize}
+	\item {'genesys2/system\_wrapper.v': {'file\_type': 'verilogSource'}}
+	\item {'genesys2/system\_constr.tcl': {'file\_type': 'SDC'}}
+	\item {'genesys2/system\_gen\_ps.tcl': {'file\_type': 'tclSource'}}
+	\item {'genesys2/system\_gen.tcl': {'file\_type': 'tclSource'}}
+	\end{itemize}
+\item NetFPGA-1G-CML
+	\begin{itemize}
+	\item {'NetFPGA-1G-CML/system\_wrapper.v': {'file\_type': 'verilogSource'}}
+	\item {'NetFPGA-1G-CML/system\_constr.tcl': {'file\_type': 'SDC'}}
+	\item {'NetFPGA-1G-CML/system\_gen\_ps.tcl': {'file\_type': 'tclSource'}}
+	\item {'NetFPGA-1G-CML/system\_gen.tcl': {'file\_type': 'tclSource'}}
+	\end{itemize}
+\item KC705
+	\begin{itemize}
+	\item {'KC705/system\_wrapper.v': {'file\_type': 'verilogSource'}}
+	\item {'KC705/system\_constr.tcl': {'file\_type': 'SDC'}}
+	\item {'KC705/system\_gen\_ps.tcl': {'file\_type': 'tclSource'}}
+	\item {'KC705/system\_gen.tcl': {'file\_type': 'tclSource'}}
+	\end{itemize}
+\item VC707
+	\begin{itemize}
+	\item {'VC707/system\_wrapper.v': {'file\_type': 'verilogSource'}}
+	\item {'VC707/system\_constr.tcl': {'file\_type': 'SDC'}}
+	\item {'VC707/system\_gen\_ps.tcl': {'file\_type': 'tclSource'}}
+	\item {'VC707/system\_gen.tcl': {'file\_type': 'tclSource'}}
 	\end{itemize}
 \item crosslink-nx\_eval
 	\begin{itemize}
 	\item {'crosslink-nx\_eval/system\_constr.pdc': {'file\_type': 'PDC'}}
 	\item {'crosslink-nx\_eval/system\_wrapper.v': {'file\_type': 'verilogSource'}}
 	\end{itemize}
-\item dep\_uc\_jtag\_io
+\item dep\_vivado\_jtag\_io
 	\begin{itemize}
-	\item {'nexys-a7-100t/system\_define.tcl': {'file\_type': 'tclSource'}}
+	\item {'common/xilinx/system\_define.tcl': {'file\_type': 'tclSource'}}
 	\end{itemize}
-\item dep\_uc\_secure\_jtag\_io
+\item dep\_jtag\_io
 	\begin{itemize}
-	\item {'nexys-a7-100t/system\_define.tcl': {'file\_type': 'tclSource'}}
+	\item {'common/system\_ps\_wrapper\_jtag.v': {'file\_type': 'verilogSource'}}
+	\end{itemize}
+\item dep\_secure\_jtag\_io
+	\begin{itemize}
+	\item {'common/system\_ps\_wrapper\_jtag.v': {'file\_type': 'verilogSource'}}
+	\end{itemize}
+\item dep\_linux\_jtag\_io
+	\begin{itemize}
+	\item {'common/system\_ps\_wrapper\_jtag.v': {'file\_type': 'verilogSource'}}
+	\end{itemize}
+\item dep\_jtag\_bscane
+	\begin{itemize}
+	\item {'common/system\_ps\_wrapper.v': {'file\_type': 'verilogSource'}}
+	\end{itemize}
+\item dep\_secure\_jtag\_bscane
+	\begin{itemize}
+	\item {'common/system\_ps\_wrapper.v': {'file\_type': 'verilogSource'}}
+	\end{itemize}
+\item dep\_linux\_jtag\_bscane
+	\begin{itemize}
+	\item {'common/system\_ps\_wrapper.v': {'file\_type': 'verilogSource'}}
 	\end{itemize}
 \end{itemize}

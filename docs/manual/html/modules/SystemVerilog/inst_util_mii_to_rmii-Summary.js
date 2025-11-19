@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("SystemVerilogModule:inst_util_mii_to_rmii","inst_util_mii_to_rmii");NDSummary.OnSummaryLoaded("SystemVerilogModule:inst_util_mii_to_rmii",[["SystemVerilog","SystemVerilog"]],[["Modules","Module"]],[[20,0,0,"inst_util_mii_to_rmii"]]);

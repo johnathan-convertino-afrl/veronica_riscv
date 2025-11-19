@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("SystemVerilogModule:inst_axi_mem_xbar","inst_axi_mem_xbar");NDSummary.OnSummaryLoaded("SystemVerilogModule:inst_axi_mem_xbar",[["SystemVerilog","SystemVerilog"]],[["Modules","Module"]],[[51,0,0,"inst_axi_mem_xbar"]]);

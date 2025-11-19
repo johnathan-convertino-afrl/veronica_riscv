@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("SystemVerilogModule:inst_cpu_rstgen","inst_cpu_rstgen");NDSummary.OnSummaryLoaded("SystemVerilogModule:inst_cpu_rstgen",[["SystemVerilog","SystemVerilog"]],[["Modules","Module"]],[[23,0,0,"inst_cpu_rstgen"]]);

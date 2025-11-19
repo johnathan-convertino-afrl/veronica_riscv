@@ -1,7 +1,7 @@
 \begin{titlepage}
   \begin{center}
 
-  {\Huge VERONICA\_AXI\_BAREMETAL}
+  {\Huge VERONICA\_RISCV}
 
   \vspace{25mm}
 
@@ -27,7 +27,7 @@
 \subsection{Introduction}
 
 \par
-The Veronica AXI Baremetal is a base Vexriscv system. This version of the Vexriscv core emulates the E31 core in its mapping of features.
+The Veronica RISCV is a base Vexriscv system. This version of the Vexriscv core emulates the E31 core in its mapping of features.
 Difference is that this core can generate a MMU and non-PMP enabled versions. The JTAG configuration can also be changed between the Xilinx BSCANE, or
 JTAG IO for external devices, or none. Each target tries to use all of the resources of the board using free IP's from the vendor, or open source
 IP cores intergrated into fusesoc.
@@ -61,7 +61,7 @@ Please see \ref{Module Documentation} for more information per target.
 \section{Building}
 
 \par
-The all Veronica AXI Baremetal project source files are written in Verilog 2001. They should synthesize in any modern FPGA software. The core comes as a fusesoc packaged core and can be
+The all Veronica RISCV project source files are written in Verilog 2001. They should synthesize in any modern FPGA software. The core comes as a fusesoc packaged core and can be
 included in any other core. Be sure to make sure you have meet the dependencies listed in the previous section.
 
 \subsection{fusesoc}

@@ -1,4 +1,4 @@
-PROJECT_NAME := veronica_axi_baremetal
+PROJECT_NAME := veronica_riscv
 
 MK_DIR := makefiles
 
