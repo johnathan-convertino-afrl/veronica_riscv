@@ -41,6 +41,10 @@ filesets:
       - AFRL:utility:digilent_genesys2_board_base_ddr_cfg:1.0.0
       - AFRL:utility:vivado_board_support_packages
       
+  genesys2_bootgen:
+    depend:
+      - AFRL:utility:digilent_veronica_genesys2_boot_gen:1.0.0
+      
   NetFPGA-1G-CML:
     files:
       - NetFPGA-1G-CML/system_wrapper.v     : {file_type : verilogSource}
@@ -88,7 +92,7 @@ filesets:
       - AFRL:device:axi_lite_spi_master:1.0.0
       - AFRL:device:axi_lite_uart_lite:1.0.0
       - AFRL:device:axi_lite_gpio:1.0.0
-      - zipcpu:axi_lite:crossbar:1.0.0
+      - AFRL:bus:axi_lite_otm:1.0.0
       
   dep_vivado_jtag_io:
     files:
@@ -212,6 +216,11 @@ targets:
     <<: *genesys2
     description: Build for genesys2 digilent development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_bscane]
+    
+  genesys2_linux_jtag_bscane_bootgen:
+    <<: *genesys2
+    description: Build for genesys2 digilent development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [dep_linux_jtag_bscane, genesys2_bootgen]
     
   NetFPGA-1G-CML: &NetFPGA-1G-CML
     <<: *default

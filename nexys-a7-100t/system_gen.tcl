@@ -9,8 +9,3 @@ set_property STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY none [get_runs synth_1]
 set_property strategy Performance_ExtraTimingOpt [get_runs impl_1]
 
 reorder_files -fileset constrs_1 -back [get_files system_constr.tcl]
-
-#fixes for zipcpu axi_crossbar in vivado. default_net will screw up synth. make all files last.
-reorder_files -fileset sources_1 -back [get_files skidbuffer.v]
-reorder_files -fileset sources_1 -back [get_files addrdecode.v]
-reorder_files -fileset sources_1 -back [get_files axilxbar.v]
