@@ -56,6 +56,10 @@ filesets:
       - AFRL:utility:digilent_NetFPGA-1G-CML_board_base_ddr_cfg:1.0.0
       - AFRL:utility:vivado_board_support_packages
       
+  NetFPGA-1G-CML_bootgen:
+    depend:
+      - AFRL:utility:digilent_veronica_NetFPGA-1G-CML_boot_gen:1.0.0
+      
   KC705:
     files:
       - KC705/system_wrapper.v     : {file_type : verilogSource}
@@ -67,6 +71,10 @@ filesets:
       - AFRL:utility:xilinx_kc705_board_base_ddr_cfg:1.0.0
       - AFRL:utility:vivado_board_support_packages
       
+  KC705_bootgen:
+    depend:
+      - AFRL:utility:xilinx_veronica_kc705_boot_gen:1.0.0
+      
   VC707:
     files:
       - VC707/system_wrapper.v     : {file_type : verilogSource}
@@ -77,6 +85,10 @@ filesets:
       - AFRL:utility:xilinx_vc707_board_base_constr:1.0.0
       - AFRL:utility:xilinx_vc707_board_base_ddr_cfg:1.0.0
       - AFRL:utility:vivado_board_support_packages
+      
+  VC707_bootgen:
+    depend:
+      - AFRL:utility:xilinx_veronica_vc707_boot_gen:1.0.0
 
   crosslink-nx_eval:
     files:
@@ -258,6 +270,11 @@ targets:
     description: Build for NetFPGA-1G-CML digilent development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_bscane]
     
+  NetFPGA-1G-CML_linux_jtag_bscane_bootgen:
+    <<: *NetFPGA-1G-CML
+    description: Build for NetFPGA-1G-CML development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [dep_linux_jtag_bscane, NetFPGA-1G-CML_bootgen]
+    
   kc705: &kc705
     <<: *default
     description: Base for kc705 xilinx development board builds, do not use.
@@ -294,6 +311,11 @@ targets:
     description: Build for kc705 xilinx development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_bscane]
     
+  kc705_linux_jtag_bscane_bootgen:
+    <<: *kc705
+    description: Build for KC705 development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [dep_linux_jtag_bscane, KC705_bootgen]
+    
   vc707: &vc707
     <<: *default
     description: Base for VC707 xilinx development board builds, do not use.
@@ -329,6 +351,11 @@ targets:
     <<: *vc707
     description: Build for vc707 xilinx development board with Linux Veronica RISCV.
     filesets_append : [dep_linux_jtag_bscane]
+    
+  vc707_linux_jtag_bscane_bootgen:
+    <<: *vc707
+    description: Build for vc707 development board with Linux Veronica RISCV with bootgen for uboot.
+    filesets_append : [dep_linux_jtag_bscane, VC707_bootgen]
     
   crosslink-nx_eval: &crosslink-nx_eval
     <<: *default

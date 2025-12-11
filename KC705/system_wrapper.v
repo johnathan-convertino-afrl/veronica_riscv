@@ -194,15 +194,6 @@ module system_wrapper #(
   clk_wiz_1 inst_clk_wiz_1
   (
     .clk_in1(clk),
-    .clk_out1(axi_cpu_clk)
-  );
-  
-  // Module: inst_clk_wiz_1
-  //
-  // Generate system clocks from main input clock of 200 Mhz for cpu 50 Mhz.
-  clk_wiz_1 inst_clk_wiz_1
-  (
-    .clk_in1(clk),
     .clk_out1(axi_clk),
     .clk_out2(cpu_clk)
   );

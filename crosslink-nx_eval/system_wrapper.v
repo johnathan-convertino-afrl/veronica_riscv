@@ -98,12 +98,14 @@ module system_wrapper
   //
   // Wraps all of the RISCV CPU core and its devices.
   system_ps_wrapper_jtag #(
-    .CLK_FREQ_MHZ(50)
+    .ACLK_FREQ_MHZ(50)
   ) inst_system_ps_wrapper_jtag (
     .tck(tck),
     .tms(tms),
     .tdi(tdi),
     .tdo(tdo),
+    .cpu_clk(sys_clk),
+    .cpu_rst(r_peripheral_areset),
     .aclk(sys_clk),
     .arstn(r_peripheral_aresetn),
     .arst(r_peripheral_areset),

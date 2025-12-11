@@ -330,7 +330,7 @@ module system_wrapper #(
     .arstn(sys_rstgen_peripheral_aresetn),
     .arst(sys_rstgen_peripheral_areset),
     .ddr_clk(axi_ddr_ctrl_ui_clk),
-    .ddr_rst(ddr_rstgen_peripheral_areset)
+    .ddr_rst(ddr_rstgen_peripheral_areset),
     .m_axi_mbus_araddr(m_axi_mbus_araddr),
     .m_axi_mbus_arburst(m_axi_mbus_arburst),
     .m_axi_mbus_arcache(m_axi_mbus_arcache),
