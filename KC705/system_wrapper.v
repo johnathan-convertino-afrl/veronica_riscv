@@ -97,8 +97,6 @@ module system_wrapper #(
     inout             ddr3_ras_n,
     inout             ddr3_reset_n,
     inout             ddr3_we_n,
-    output  [ 2:0]    ddr3_1_n,
-    output  [ 1:0]    ddr3_1_p,
     output  [ 7:0]    leds,
     input   [ 3:0]    dip_switches,
     input             uart_tx,
@@ -171,9 +169,9 @@ module system_wrapper #(
   
   wire [31:0] s_spi_csn;
   
-  assign ddr3_1_p = 2'b11;
-  
-  assign ddr3_1_n = 3'b000;
+//   assign ddr3_1_p = 2'b11;
+//   
+//   assign ddr3_1_n = 3'b000;
   
   assign sd_spi_csn = s_spi_csn[0];
   

@@ -220,7 +220,7 @@ module system_wrapper #(
     .mb_debug_sys_rst(debug_rst),
     .peripheral_reset(sys_rstgen_peripheral_areset),
     .peripheral_aresetn(sys_rstgen_peripheral_aresetn),
-    .slowest_sync_clk(axi_cpu_clk)
+    .slowest_sync_clk(axi_clk)
   );
   
   // Module: inst_cpu_rstgen

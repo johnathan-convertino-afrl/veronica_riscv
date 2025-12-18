@@ -49,6 +49,4 @@ set_property -dict { PACKAGE_PIN E15  IOSTANDARD LVCMOS33 } [get_ports { ftdi_rx
 set_property -dict { PACKAGE_PIN H18  IOSTANDARD LVCMOS33 } [get_ports { ftdi_tx  }]; #IO_L16P_T2_35 Sch=sd_dat[0]
 set_property -dict { PACKAGE_PIN G19  IOSTANDARD LVCMOS33 } [get_ports { ftdi_cts }]; #IO_L14N_T2_SRCC_35 Sch=sd_dat[3]
 
-set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
-
 
