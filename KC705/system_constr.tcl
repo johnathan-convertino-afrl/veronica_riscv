@@ -43,7 +43,7 @@ set_property -dict { PACKAGE_PIN AB22     IOSTANDARD LVCMOS25 } [get_ports { sd_
 set_property -dict { PACKAGE_PIN AC20     IOSTANDARD LVCMOS25 } [get_ports { sd_spi_miso }];
 set_property -dict { PACKAGE_PIN AC21     IOSTANDARD LVCMOS25 } [get_ports { sd_spi_csn }];
 
-set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
+# set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
 
 
 

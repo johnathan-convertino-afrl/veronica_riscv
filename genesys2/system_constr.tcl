@@ -44,7 +44,7 @@ set_property -dict { PACKAGE_PIN R29  IOSTANDARD LVCMOS33 DRIVE 8  PULLUP    tru
 set_property -dict { PACKAGE_PIN R26  IOSTANDARD LVCMOS33 PULLUP true }                        [get_ports { sd_spi_miso }]; #IO_L16P_T2_35 Sch=sd_dat[0]
 set_property -dict { PACKAGE_PIN T30  IOSTANDARD LVCMOS33 DRIVE 16 PULLUP    true SLEW SLOW }  [get_ports { sd_spi_csn }]; #IO_L14N_T2_SRCC_35 Sch=sd_dat[3]
 
-set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
+# set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
 
 
 

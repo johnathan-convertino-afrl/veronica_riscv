@@ -43,7 +43,7 @@ set_property -dict { PACKAGE_PIN AP30     IOSTANDARD LVCMOS18 } [get_ports { sd_
 set_property -dict { PACKAGE_PIN AR30     IOSTANDARD LVCMOS18 } [get_ports { sd_spi_miso }];
 set_property -dict { PACKAGE_PIN AT30     IOSTANDARD LVCMOS18 } [get_ports { sd_spi_csn }];
 
-set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
+# set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
 
 
 

@@ -228,7 +228,7 @@ module system_wrapper #(
   (
     .aux_reset_in(axi_ddr_ctrl_ui_clk_sync_rst),
     .dcm_locked(axi_ddr_ctrl_mmcm_locked),
-    .ext_reset_in(resetn),
+    .ext_reset_in(reset),
     .interconnect_aresetn(),
     .mb_debug_sys_rst(debug_rst),
     .peripheral_reset(cpu_rstgen_peripheral_areset),

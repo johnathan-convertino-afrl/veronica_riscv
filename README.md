@@ -26,7 +26,7 @@
 ### DOCUMENTATION
   For detailed usage information, please navigate to one of the following sources. They are the same, just in a different format.
 
-  - [veronica_axi.pdf](docs/manual/veronica_riscv.pdf)
+  - [veronica_riscv.pdf](docs/manual/veronica_riscv.pdf)
   - [github page](https://johnathan-convertino-afrl.github.io/veronica_riscv/)
 
 ### DEPENDENCIES
@@ -37,10 +37,6 @@
   - AD:ethernet:util_mii_to_rmii:1.0.0
   - AFRL:utility:helper:1.0.0
   - AFRL:utility:tcl_helper_check:1.0.0
-  - zipcpu:axi_lite:crossbar:1.0.0
-  - zipcpu:axi:crossbar:1.0.0
-  - zipcpu:axi:sdio:1.0.0
-  - zipcpu:axi:axixclk:1.0.0
   - spinalhdl:cpu:veronica_axi_jtag_io:1.0.0
   - spinalhdl:cpu:veronica_axi_secure_jtag_io:1.0.0
   - spinalhdl:cpu:veronica_axi_jtag_xilinx_bscane:1.0.0
@@ -76,3 +72,7 @@ openOCD can also be used if a svf file is generated from the programmer.
 
 Also the lattice programmer can be user if the ftdi_sio usbserial modules are rmmod.
 Plus the usual JTAG adapter udev permissions (plugdev)
+
+### Programming
+* VC707 target must use the mt28gu01gaax1e-bpi-x16 device with the generated MCS file in Vivado.
+* KC705 target must use the *** device with the generated MCS file in Vivado.
