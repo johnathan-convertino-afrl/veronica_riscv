@@ -100,10 +100,26 @@ module system_wrapper #(
     inout             ddr2_we_n,
     output  [15:0]    leds,
     input   [15:0]    slide_switches,
+    input   [ 4:0]    push_buttons,
     input             ftdi_tx,
     output            ftdi_rx,
     input             ftdi_rts,
     output            ftdi_cts,
+    output            eth_mdc,
+    inout             eth_mdio,
+    input             eth_rstn,
+    input             eth_crsdv,
+    input             eth_rxerr,
+    input   [1:0]     eth_rxd,
+    output            eth_txen,
+    output  [1:0]     eth_txd,
+    output            eth_refclk,
+    input             eth_50mclk,
+    output  [ 3:0]    vga_r,
+    output  [ 3:0]    vga_g,
+    output  [ 3:0]    vga_b,
+    output            vga_hs,
+    output            vga_vs,
     input             sd_spi_miso,
     output            sd_spi_mosi,
     output            sd_spi_csn,
@@ -114,48 +130,105 @@ module system_wrapper #(
   assign ftdi_cts = ftdi_rts;
 
   // Memory bus wires
-  wire            m_axi_mbus_awvalid;
-  wire            m_axi_mbus_awready;
-  wire  [31:0]    m_axi_mbus_awaddr;
-  wire  [ 3:0]    m_axi_mbus_awid;
-  wire  [ 7:0]    m_axi_mbus_awlen;
-  wire  [ 2:0]    m_axi_mbus_awsize;
-  wire  [ 1:0]    m_axi_mbus_awburst;
-  wire  [ 0:0]    m_axi_mbus_awlock;
-  wire  [ 3:0]    m_axi_mbus_awcache;
-  wire  [ 3:0]    m_axi_mbus_awqos;
-  wire  [ 2:0]    m_axi_mbus_awprot;
-  wire            m_axi_mbus_wvalid;
-  wire            m_axi_mbus_wready;
-  wire  [31:0]    m_axi_mbus_wdata;
-  wire  [ 3:0]    m_axi_mbus_wstrb;
-  wire            m_axi_mbus_wlast;
-  wire            m_axi_mbus_bvalid;
-  wire            m_axi_mbus_bready;
-  wire  [ 3:0]    m_axi_mbus_bid;
-  wire  [ 1:0]    m_axi_mbus_bresp;
-  wire            m_axi_mbus_arvalid;
-  wire            m_axi_mbus_arready;
-  wire  [31:0]    m_axi_mbus_araddr;
-  wire  [ 3:0]    m_axi_mbus_arid;
-  wire  [ 7:0]    m_axi_mbus_arlen;
-  wire  [ 2:0]    m_axi_mbus_arsize;
-  wire  [ 1:0]    m_axi_mbus_arburst;
-  wire  [ 0:0]    m_axi_mbus_arlock;
-  wire  [ 3:0]    m_axi_mbus_arcache;
-  wire  [ 3:0]    m_axi_mbus_arqos;
-  wire  [ 2:0]    m_axi_mbus_arprot;
-  wire            m_axi_mbus_rvalid;
-  wire            m_axi_mbus_rready;
-  wire  [31:0]    m_axi_mbus_rdata;
-  wire  [ 3:0]    m_axi_mbus_rid;
-  wire  [ 1:0]    m_axi_mbus_rresp;
-  wire            m_axi_mbus_rlast;
+  wire             m_axi_mbus_awvalid;
+  wire             m_axi_mbus_awready;
+  wire  [31:0]     m_axi_mbus_awaddr;
+  wire  [ 3:0]     m_axi_mbus_awid;
+  wire  [ 7:0]     m_axi_mbus_awlen;
+  wire  [ 2:0]     m_axi_mbus_awsize;
+  wire  [ 1:0]     m_axi_mbus_awburst;
+  wire  [ 0:0]     m_axi_mbus_awlock;
+  wire  [ 3:0]     m_axi_mbus_awcache;
+  wire  [ 3:0]     m_axi_mbus_awqos;
+  wire  [ 2:0]     m_axi_mbus_awprot;
+  wire             m_axi_mbus_wvalid;
+  wire             m_axi_mbus_wready;
+  wire  [31:0]     m_axi_mbus_wdata;
+  wire  [ 3:0]     m_axi_mbus_wstrb;
+  wire             m_axi_mbus_wlast;
+  wire             m_axi_mbus_bvalid;
+  wire             m_axi_mbus_bready;
+  wire  [ 3:0]     m_axi_mbus_bid;
+  wire  [ 1:0]     m_axi_mbus_bresp;
+  wire             m_axi_mbus_arvalid;
+  wire             m_axi_mbus_arready;
+  wire  [31:0]     m_axi_mbus_araddr;
+  wire  [ 3:0]     m_axi_mbus_arid;
+  wire  [ 7:0]     m_axi_mbus_arlen;
+  wire  [ 2:0]     m_axi_mbus_arsize;
+  wire  [ 1:0]     m_axi_mbus_arburst;
+  wire  [ 0:0]     m_axi_mbus_arlock;
+  wire  [ 3:0]     m_axi_mbus_arcache;
+  wire  [ 3:0]     m_axi_mbus_arqos;
+  wire  [ 2:0]     m_axi_mbus_arprot;
+  wire             m_axi_mbus_rvalid;
+  wire             m_axi_mbus_rready;
+  wire  [31:0]     m_axi_mbus_rdata;
+  wire  [ 3:0]     m_axi_mbus_rid;
+  wire  [ 1:0]     m_axi_mbus_rresp;
+  wire             m_axi_mbus_rlast;
+  
+  //axi lite acc (dbus only)
+  wire [31:0]     s_axi_acc_ARADDR;
+  wire            s_axi_acc_ARREADY;
+  wire            s_axi_acc_ARVALID;
+  wire [31:0]     s_axi_acc_AWADDR;
+  wire            s_axi_acc_AWREADY;
+  wire            s_axi_acc_AWVALID;
+  wire            s_axi_acc_BREADY;
+  wire [ 1:0]     s_axi_acc_BRESP;
+  wire            s_axi_acc_BVALID;
+  wire [31:0]     s_axi_acc_RDATA;
+  wire            s_axi_acc_RREADY;
+  wire [ 1:0]     s_axi_acc_RRESP;
+  wire            s_axi_acc_RVALID;
+  wire [31:0]     s_axi_acc_WDATA;
+  wire            s_axi_acc_WREADY;
+  wire [ 3:0]     s_axi_acc_WSTRB;
+  wire            s_axi_acc_WVALID;
+  wire [ 2:0]     s_axi_acc_ARPROT;
+  wire [ 2:0]     s_axi_acc_AWPROT;
+  
+  //vga dma
+  wire  [31:0]    s_axi_dma_vga_araddr;
+  wire  [ 3:0]    s_axi_dma_vga_arcache;
+  wire  [ 7:0]    s_axi_dma_vga_arlen;
+  wire  [ 2:0]    s_axi_dma_vga_arprot;
+  wire            s_axi_dma_vga_arready;
+  wire  [ 2:0]    s_axi_dma_vga_arsize;
+  wire            s_axi_dma_vga_arvalid;
+  wire  [ 1:0]    s_axi_dma_vga_arburst;
+  wire  [31:0]    s_axi_dma_vga_awaddr;
+  wire  [ 3:0]    s_axi_dma_vga_awcache;
+  wire  [ 7:0]    s_axi_dma_vga_awlen;
+  wire  [ 2:0]    s_axi_dma_vga_awprot;
+  wire            s_axi_dma_vga_awready;
+  wire  [ 2:0]    s_axi_dma_vga_awsize;
+  wire            s_axi_dma_vga_awvalid;
+  wire  [ 1:0]    s_axi_dma_vga_awburst;
+  wire            s_axi_dma_vga_bready;
+  wire            s_axi_dma_vga_bvalid;
+  wire  [ 1:0]    s_axi_dma_vga_bresp;
+  wire  [31:0]    s_axi_dma_vga_rdata;
+  wire            s_axi_dma_vga_rlast;
+  wire            s_axi_dma_vga_rready;
+  wire            s_axi_dma_vga_rvalid;
+  wire  [ 1:0]    s_axi_dma_vga_rresp;
+  wire  [31:0]    s_axi_dma_vga_wdata;
+  wire            s_axi_dma_vga_wlast;
+  wire            s_axi_dma_vga_wready;
+  wire  [ 3:0]    s_axi_dma_vga_wstrb;
+  wire            s_axi_dma_vga_wvalid;
+  
+  //irqs
+  wire           eth_irq;
+  wire           vga_irq;
   
   //clocks
   wire           axi_clk;
   wire           ddr_clk;
   wire           cpu_clk;
+  wire           vga_clk;
   wire           clk_ibufg;
   wire           clk_bufg;
 
@@ -175,6 +248,8 @@ module system_wrapper #(
   wire [31:0] s_spi_csn;
   
   assign sd_spi_csn = s_spi_csn[0];
+    
+  assign eth_refclk = 1'bz;
 
   assign sd_reset = sys_rstgen_peripheral_areset;
   
@@ -194,7 +269,8 @@ module system_wrapper #(
     .clk_in1(clk_bufg),
     .clk_out1(axi_clk),
     .clk_out2(ddr_clk),
-    .clk_out3(cpu_clk)
+    .clk_out3(cpu_clk),
+    .clk_out4(vga_clk)
   );
   
   // Module: inst_ddr_rstgen
@@ -239,6 +315,82 @@ module system_wrapper #(
     .peripheral_reset(cpu_rstgen_peripheral_areset),
     .peripheral_aresetn(),
     .slowest_sync_clk(cpu_clk)
+  );
+  
+  // Module : inst_system_pl_axi_acc_wrapper
+  //
+  // Extra devices outside the base Veronica RISCV PS system.
+  system_pl_axi_acc_wrapper inst_system_pl_axi_acc_wrapper
+  (
+    .aclk(axi_clk),
+    .arstn(sys_rstgen_peripheral_aresetn),
+    .s_axi_acc_AWVALID(s_axi_acc_AWVALID),
+    .s_axi_acc_AWREADY(s_axi_acc_AWREADY),
+    .s_axi_acc_AWADDR(s_axi_acc_AWADDR),
+    .s_axi_acc_AWPROT(s_axi_acc_AWPROT),
+    .s_axi_acc_WVALID(s_axi_acc_WVALID),
+    .s_axi_acc_WREADY(s_axi_acc_WREADY),
+    .s_axi_acc_WDATA(s_axi_acc_WDATA),
+    .s_axi_acc_WSTRB(s_axi_acc_WSTRB),
+    .s_axi_acc_BVALID(s_axi_acc_BVALID),
+    .s_axi_acc_BREADY(s_axi_acc_BREADY),
+    .s_axi_acc_BRESP(s_axi_acc_BRESP),
+    .s_axi_acc_ARVALID(s_axi_acc_ARVALID),
+    .s_axi_acc_ARREADY(s_axi_acc_ARREADY),
+    .s_axi_acc_ARADDR(s_axi_acc_ARADDR),
+    .s_axi_acc_ARPROT(s_axi_acc_ARPROT),
+    .s_axi_acc_RVALID(s_axi_acc_RVALID),
+    .s_axi_acc_RREADY(s_axi_acc_RREADY),
+    .s_axi_acc_RDATA(s_axi_acc_RDATA),
+    .s_axi_acc_RRESP(s_axi_acc_RRESP),
+    .vga_hsync(vga_hs),
+    .vga_vsync(vga_vs),
+    .vga_r(vga_r),
+    .vga_g(vga_g),
+    .vga_b(vga_b),
+    .vga_clk(vga_clk),
+    .axi_vga_irq(vga_irq),
+    .ddr_aclk(axi_ddr_ctrl_ui_clk),
+    .ddr_arstn(ddr_rstgen_peripheral_aresetn),
+    .s_axi_dma_vga_araddr(s_axi_dma_vga_araddr),
+    .s_axi_dma_vga_arcache(s_axi_dma_vga_arcache),
+    .s_axi_dma_vga_arlen(s_axi_dma_vga_arlen),
+    .s_axi_dma_vga_arprot(s_axi_dma_vga_arprot),
+    .s_axi_dma_vga_arready(s_axi_dma_vga_arready),
+    .s_axi_dma_vga_arsize(s_axi_dma_vga_arsize),
+    .s_axi_dma_vga_arvalid(s_axi_dma_vga_arvalid),
+    .s_axi_dma_vga_arburst(s_axi_dma_vga_arburst),
+    .s_axi_dma_vga_awaddr(s_axi_dma_vga_awaddr),
+    .s_axi_dma_vga_awcache(s_axi_dma_vga_awcache),
+    .s_axi_dma_vga_awlen(s_axi_dma_vga_awlen),
+    .s_axi_dma_vga_awprot(s_axi_dma_vga_awprot),
+    .s_axi_dma_vga_awready(s_axi_dma_vga_awready),
+    .s_axi_dma_vga_awsize(s_axi_dma_vga_awsize),
+    .s_axi_dma_vga_awvalid(s_axi_dma_vga_awvalid),
+    .s_axi_dma_vga_awburst(s_axi_dma_vga_awburst),
+    .s_axi_dma_vga_bready(s_axi_dma_vga_bready),
+    .s_axi_dma_vga_bvalid(s_axi_dma_vga_bvalid),
+    .s_axi_dma_vga_bresp(s_axi_dma_vga_bresp),
+    .s_axi_dma_vga_rdata(s_axi_dma_vga_rdata),
+    .s_axi_dma_vga_rlast(s_axi_dma_vga_rlast),
+    .s_axi_dma_vga_rready(s_axi_dma_vga_rready),
+    .s_axi_dma_vga_rvalid(s_axi_dma_vga_rvalid),
+    .s_axi_dma_vga_rresp(s_axi_dma_vga_rresp),
+    .s_axi_dma_vga_wdata(s_axi_dma_vga_wdata),
+    .s_axi_dma_vga_wlast(s_axi_dma_vga_wlast),
+    .s_axi_dma_vga_wready(s_axi_dma_vga_wready),
+    .s_axi_dma_vga_wstrb(s_axi_dma_vga_wstrb),
+    .s_axi_dma_vga_wvalid(s_axi_dma_vga_wvalid),
+    .eth_mdc(eth_mdc),
+    .eth_mdio(eth_mdio),
+    .eth_rstn(eth_rstn),
+    .eth_crsdv(eth_crsdv),
+    .eth_rxerr(eth_rxerr),
+    .eth_rxd(eth_rxd),
+    .eth_txen(eth_txen),
+    .eth_txd(eth_txd),
+    .eth_50mclk(eth_50mclk),
+    .axi_eth_irq(eth_irq)
   );
   
   // Module: inst_axi_ddr_ctrl
@@ -373,29 +525,29 @@ module system_wrapper #(
     .m_axi_mbus_awlock(m_axi_mbus_awlock),
     .m_axi_mbus_rresp(m_axi_mbus_rresp),
     .m_axi_mbus_bresp(m_axi_mbus_bresp),
-    .m_axi_acc_araddr(),
-    .m_axi_acc_arprot(),
-    .m_axi_acc_arready(1'b1),
-    .m_axi_acc_arvalid(),
-    .m_axi_acc_awaddr(),
-    .m_axi_acc_awprot(),
-    .m_axi_acc_awready(1'b1),
-    .m_axi_acc_awvalid(),
-    .m_axi_acc_bready(),
-    .m_axi_acc_bresp(3'b000),
-    .m_axi_acc_bvalid(2'b00),
-    .m_axi_acc_rdata(32'h00000000),
-    .m_axi_acc_rready(),
-    .m_axi_acc_rresp(3'b000),
-    .m_axi_acc_rvalid(1'b00),
-    .m_axi_acc_wdata(),
-    .m_axi_acc_wready(1'b1),
-    .m_axi_acc_wstrb(),
-    .m_axi_acc_wvalid(),
-    .irq(3'b000),
+    .m_axi_acc_araddr(s_axi_acc_ARADDR),
+    .m_axi_acc_arprot(s_axi_acc_ARPROT),
+    .m_axi_acc_arready(s_axi_acc_ARREADY),
+    .m_axi_acc_arvalid(s_axi_acc_ARVALID),
+    .m_axi_acc_awaddr(s_axi_acc_AWADDR),
+    .m_axi_acc_awprot(s_axi_acc_AWPROT),
+    .m_axi_acc_awready(s_axi_acc_AWREADY),
+    .m_axi_acc_awvalid(s_axi_acc_AWVALID),
+    .m_axi_acc_bready(s_axi_acc_BREADY),
+    .m_axi_acc_bresp(s_axi_acc_BRESP),
+    .m_axi_acc_bvalid(s_axi_acc_BVALID),
+    .m_axi_acc_rdata(s_axi_acc_RDATA),
+    .m_axi_acc_rready(s_axi_acc_RREADY),
+    .m_axi_acc_rresp(s_axi_acc_RRESP),
+    .m_axi_acc_rvalid(s_axi_acc_RVALID),
+    .m_axi_acc_wdata(s_axi_acc_WDATA),
+    .m_axi_acc_wready(s_axi_acc_WREADY),
+    .m_axi_acc_wstrb(s_axi_acc_WSTRB),
+    .m_axi_acc_wvalid(s_axi_acc_WVALID),
+    .irq({1'b0, vga_irq, eth_irq}),
     .uart_rxd(ftdi_tx),
     .uart_txd(ftdi_rx),
-    .gpio_io_i(slide_switches),
+    .gpio_io_i({11'b00000000000, slide_switches, push_buttons}),
     .gpio_io_o(leds),
     .gpio_io_t(),
     .spi_miso(sd_spi_miso),

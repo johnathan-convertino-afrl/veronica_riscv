@@ -52,6 +52,7 @@
 
 #### Targets
 
+* KC705 is untested.
 * RUN WITH: (fusesoc run --target=zed_bootgen VENDER:CORE:NAME:VERSION)
 * -- target can be one of the below.
   - nexys-a7-100t                           : Base for nexys-a7-100t digilent development board builds, do not use.
@@ -75,4 +76,4 @@ Plus the usual JTAG adapter udev permissions (plugdev)
 
 ### Programming
 * VC707 target must use the mt28gu01gaax1e-bpi-x16 device with the generated MCS file in Vivado.
-* KC705 target must use the *** device with the generated MCS file in Vivado.
+* KC705/NetFPGA-1G-CML target must use the 28F00ap30t device with the generated MCS file in Vivado.
