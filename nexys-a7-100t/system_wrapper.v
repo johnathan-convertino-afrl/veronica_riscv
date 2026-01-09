@@ -107,7 +107,7 @@ module system_wrapper #(
     output            ftdi_cts,
     output            eth_mdc,
     inout             eth_mdio,
-    input             eth_rstn,
+    output            eth_rstn,
     input             eth_crsdv,
     input             eth_rxerr,
     input   [1:0]     eth_rxd,
@@ -127,8 +127,6 @@ module system_wrapper #(
     output            sd_reset
   );
   
-  assign ftdi_cts = ftdi_rts;
-
   // Memory bus wires
   wire             m_axi_mbus_awvalid;
   wire             m_axi_mbus_awready;
@@ -229,6 +227,7 @@ module system_wrapper #(
   wire           ddr_clk;
   wire           cpu_clk;
   wire           vga_clk;
+  wire           eth_clk;
   wire           clk_ibufg;
   wire           clk_bufg;
 
@@ -238,6 +237,7 @@ module system_wrapper #(
   wire [ 0:0]    sys_rstgen_peripheral_aresetn;
   wire [ 0:0]    sys_rstgen_peripheral_areset;
   wire [ 0:0]    cpu_rstgen_peripheral_areset;
+  wire [ 0:0]    eth_rstgen_peripheral_aresetn;
   wire           debug_rst;
 
   //ddr signals and clocks
@@ -247,9 +247,13 @@ module system_wrapper #(
   
   wire [31:0] s_spi_csn;
   
+  assign ftdi_cts = ftdi_rts;
+  
   assign sd_spi_csn = s_spi_csn[0];
     
-  assign eth_refclk = 1'bz;
+  assign eth_refclk = eth_clk;
+  
+  assign eth_rstn = eth_rstgen_peripheral_aresetn;
 
   assign sd_reset = sys_rstgen_peripheral_areset;
   
@@ -270,7 +274,8 @@ module system_wrapper #(
     .clk_out1(axi_clk),
     .clk_out2(ddr_clk),
     .clk_out3(cpu_clk),
-    .clk_out4(vga_clk)
+    .clk_out4(vga_clk),
+    .clk_out5(eth_clk)
   );
   
   // Module: inst_ddr_rstgen
@@ -315,6 +320,21 @@ module system_wrapper #(
     .peripheral_reset(cpu_rstgen_peripheral_areset),
     .peripheral_aresetn(),
     .slowest_sync_clk(cpu_clk)
+  );
+  
+  // Module: inst_eth_rstgen
+  //
+  // Generate general system resets
+  eth_rstgen inst_eth_rstgen
+  (
+    .aux_reset_in(axi_ddr_ctrl_ui_clk_sync_rst),
+    .dcm_locked(axi_ddr_ctrl_mmcm_locked),
+    .ext_reset_in(resetn),
+    .interconnect_aresetn(),
+    .mb_debug_sys_rst(debug_rst),
+    .peripheral_reset(),
+    .peripheral_aresetn(eth_rstgen_peripheral_aresetn),
+    .slowest_sync_clk(eth_clk)
   );
   
   // Module : inst_system_pl_axi_acc_wrapper
@@ -383,13 +403,13 @@ module system_wrapper #(
     .s_axi_dma_vga_wvalid(s_axi_dma_vga_wvalid),
     .eth_mdc(eth_mdc),
     .eth_mdio(eth_mdio),
-    .eth_rstn(eth_rstn),
+    .eth_rstn(eth_rstgen_peripheral_aresetn),
     .eth_crsdv(eth_crsdv),
     .eth_rxerr(eth_rxerr),
     .eth_rxd(eth_rxd),
     .eth_txen(eth_txen),
     .eth_txd(eth_txd),
-    .eth_50mclk(eth_50mclk),
+    .eth_50mclk(eth_clk),
     .axi_eth_irq(eth_irq)
   );
   
@@ -486,6 +506,8 @@ module system_wrapper #(
     .aclk(axi_clk),
     .arstn(sys_rstgen_peripheral_aresetn),
     .arst(sys_rstgen_peripheral_areset),
+    .usb_phy_clk(1'b0),
+    .usb_phy_rst(sys_rstgen_peripheral_areset),
     .ddr_clk(axi_ddr_ctrl_ui_clk),
     .ddr_rst(ddr_rstgen_peripheral_areset),
     .m_axi_mbus_araddr(m_axi_mbus_araddr),
@@ -544,6 +566,43 @@ module system_wrapper #(
     .m_axi_acc_wready(s_axi_acc_WREADY),
     .m_axi_acc_wstrb(s_axi_acc_WSTRB),
     .m_axi_acc_wvalid(s_axi_acc_WVALID),
+    .s_axi_dma0_awvalid(s_axi_dma_vga_awvalid),
+    .s_axi_dma0_awready(s_axi_dma_vga_awready),
+    .s_axi_dma0_awaddr(s_axi_dma_vga_awaddr),
+    .s_axi_dma0_awid(2'b00),
+    .s_axi_dma0_awlen(s_axi_dma_vga_awlen),
+    .s_axi_dma0_awsize(s_axi_dma_vga_awsize),
+    .s_axi_dma0_awburst(s_axi_dma_vga_awburst),
+    .s_axi_dma0_awlock(1'b0),
+    .s_axi_dma0_awcache(s_axi_dma_vga_awcache),
+    .s_axi_dma0_awqos(4'b0000),
+    .s_axi_dma0_awprot(s_axi_dma_vga_awprot),
+    .s_axi_dma0_wvalid(s_axi_dma_vga_wvalid),
+    .s_axi_dma0_wready(s_axi_dma_vga_wready),
+    .s_axi_dma0_wdata(s_axi_dma_vga_wdata),
+    .s_axi_dma0_wstrb(s_axi_dma_vga_wstrb),
+    .s_axi_dma0_wlast(s_axi_dma_vga_wlast),
+    .s_axi_dma0_bvalid(s_axi_dma_vga_bvalid),
+    .s_axi_dma0_bready(s_axi_dma_vga_bready),
+    .s_axi_dma0_bid(),
+    .s_axi_dma0_bresp(s_axi_dma_vga_bresp),
+    .s_axi_dma0_arvalid(s_axi_dma_vga_arvalid),
+    .s_axi_dma0_arready(s_axi_dma_vga_arready),
+    .s_axi_dma0_araddr(s_axi_dma_vga_araddr),
+    .s_axi_dma0_arid(2'b00),
+    .s_axi_dma0_arlen(s_axi_dma_vga_arlen),
+    .s_axi_dma0_arsize(s_axi_dma_vga_arsize),
+    .s_axi_dma0_arburst(s_axi_dma_vga_arburst),
+    .s_axi_dma0_arlock(1'b0),
+    .s_axi_dma0_arcache(s_axi_dma_vga_arcache),
+    .s_axi_dma0_arqos(4'b0000),
+    .s_axi_dma0_arprot(s_axi_dma_vga_arprot),
+    .s_axi_dma0_rvalid(s_axi_dma_vga_rvalid),
+    .s_axi_dma0_rready(s_axi_dma_vga_rready),
+    .s_axi_dma0_rdata(s_axi_dma_vga_rdata),
+    .s_axi_dma0_rid(),
+    .s_axi_dma0_rresp(s_axi_dma_vga_rresp),
+    .s_axi_dma0_rlast(s_axi_dma_vga_rlast),
     .irq({1'b0, vga_irq, eth_irq}),
     .uart_rxd(ftdi_tx),
     .uart_txd(ftdi_rx),
@@ -554,6 +613,12 @@ module system_wrapper #(
     .spi_mosi(sd_spi_mosi),
     .spi_csn(s_spi_csn),
     .spi_sclk(sd_spi_sclk),
+    .usb_dp_read(1'b1),
+    .usb_dp_write(),
+    .usb_dp_writeEnable(),
+    .usb_dm_read(1'b0),
+    .usb_dm_write(),
+    .usb_dm_writeEnable(),
     .debug_rst(debug_rst)
   );
 

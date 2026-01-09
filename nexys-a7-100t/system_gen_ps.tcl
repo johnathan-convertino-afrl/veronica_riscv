@@ -17,6 +17,8 @@ set_property CONFIG.CLKOUT3_USED {true} [get_ips clk_wiz_1]
 set_property CONFIG.CLKOUT3_REQUESTED_OUT_FREQ {50.000} [get_ips clk_wiz_1]
 set_property CONFIG.CLKOUT4_USED {true} [get_ips clk_wiz_1]
 set_property CONFIG.CLKOUT4_REQUESTED_OUT_FREQ {25.000} [get_ips clk_wiz_1]
+set_property CONFIG.CLKOUT5_USED {true} [get_ips clk_wiz_1]
+set_property CONFIG.CLKOUT5_REQUESTED_OUT_FREQ {50.000} [get_ips clk_wiz_1]
 
 set CLK1_FREQ_MHZ [get_property CONFIG.CLKOUT1_REQUESTED_OUT_FREQ [get_ips clk_wiz_1]]
 
@@ -35,6 +37,18 @@ set_property CONFIG.C_EXT_RESET_HIGH 0 [get_ips cpu_rstgen]
 set_property CONFIG.C_AUX_RESET_HIGH 1 [get_ips cpu_rstgen]
 
 set_property generate_synth_checkpoint false [get_files cpu_rstgen.xci]
+
+ip_vlvn_version_check "xilinx.com:ip:proc_sys_reset:5.0"
+
+# create a eth reset
+create_ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 -module_name eth_rstgen
+set_property CONFIG.RESET_BOARD_INTERFACE Custom [get_ips eth_rstgen]
+set_property CONFIG.C_EXT_RST_WIDTH 1 [get_ips eth_rstgen]
+set_property CONFIG.C_AUX_RST_WIDTH 1 [get_ips eth_rstgen]
+set_property CONFIG.C_EXT_RESET_HIGH 0 [get_ips eth_rstgen]
+set_property CONFIG.C_AUX_RESET_HIGH 1 [get_ips eth_rstgen]
+
+set_property generate_synth_checkpoint false [get_files eth_rstgen.xci]
 
 ip_vlvn_version_check "xilinx.com:ip:proc_sys_reset:5.0"
 
