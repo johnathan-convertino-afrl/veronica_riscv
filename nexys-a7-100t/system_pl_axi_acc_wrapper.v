@@ -271,9 +271,9 @@ module system_pl_axi_acc_wrapper
     .tft_de(),
     .tft_dps(),
     .tft_vga_clk(),
-    .tft_vga_r(vga_r),
-    .tft_vga_g(vga_g),
-    .tft_vga_b(vga_b)
+    .tft_vga_r(s_vga_r),
+    .tft_vga_g(s_vga_g),
+    .tft_vga_b(s_vga_b)
   );
   
   axi_ethernet inst_axi_eth
