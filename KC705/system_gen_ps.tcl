@@ -12,7 +12,7 @@ set_property CONFIG.PRIM_IN_FREQ 200.000 [get_ips clk_wiz_1]
 set_property CONFIG.USE_RESET false [get_ips clk_wiz_1]
 set_property CONFIG.PRIM_SOURCE {No_buffer} [get_ips clk_wiz_1]
 set_property CONFIG.CLKOUT2_USED {true} [get_ips clk_wiz_1]
-set_property CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {50.000} [get_ips clk_wiz_1]
+set_property CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {100.000} [get_ips clk_wiz_1]
 
 set CLK1_FREQ_MHZ [get_property CONFIG.CLKOUT1_REQUESTED_OUT_FREQ [get_ips clk_wiz_1]]
 
